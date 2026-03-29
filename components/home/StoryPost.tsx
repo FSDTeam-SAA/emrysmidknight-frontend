@@ -26,7 +26,7 @@ export function StoryPost({
   comments,
 }: StoryPostProps) {
   return (
-    <div className="w-full max-w-2xl bg-[#FFFFFF0D]   rounded-[8px] p-6 text-white">
+    <div className="w-full max-w-2xl bg-[#FFFFFF] dark:bg-[#FFFFFF0D]   rounded-[8px] p-6 text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -35,8 +35,8 @@ export function StoryPost({
             <AvatarFallback>{author.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <h3 className="font-medium text-xl leading-5">{author}</h3>
-            <p className="text-[#D7D7D7] text-sm">@{handle}</p>
+            <h3 className="font-medium text-xl text-[#121212] dark:text-white leading-5">{author}</h3>
+            <p className="text-[#7D7D7D] dark:text-[#D7D7D7] text-sm">@{handle}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -48,10 +48,10 @@ export function StoryPost({
       </div>
 
       {/* Title */}
-      <h2 className="text-xl font-bold mb-3 leading-6">{title}</h2>
+      <h2 className="text-xl font-bold mb-3 text-[#121212] dark:text-white leading-6">{title}</h2>
 
       {/* Content */}
-      <p className="text-zinc-300 text-base leading-6 mb-4 whitespace-pre-wrap">
+      <p className=" text-base text-[#121212] dark:text-[#D7D7D7] leading-6 mb-4 whitespace-pre-wrap">
         {content}
       </p>
 
