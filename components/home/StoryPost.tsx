@@ -59,10 +59,10 @@ export function StoryPost({
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#5E5E5E] text-zinc-500">
         <div className="flex items-center gap-2">
           <Heart className="h-5 w-5" />
-          <span className="text-sm font-semibold text-white">{likes.toLocaleString()}k</span>
+          <span className="text-sm font-semibold dark:text-white">{likes.toLocaleString()}k</span>
         <div className="flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
-          <span className="text-sm font-semibold text-white">{comments}</span>
+          <span className="text-sm font-semibold dark:text-white">{comments}</span>
         </div>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-blue-400 hover:bg-blue-400/10">
