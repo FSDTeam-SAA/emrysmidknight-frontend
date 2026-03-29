@@ -65,7 +65,7 @@ export default function SettingsPage() {
       <div className="container mx-auto">
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-[color:var(--page-text)] mb-7">Settings</h1>
+        <h1 className="text-3xl lg:text-[40px] font-semibold text-[color:var(--page-text)] mb-7">Settings</h1>
 
         {/* Tabs */}
         <div className="flex border-b border-[color:var(--border)] mb-6">
@@ -73,9 +73,9 @@ export default function SettingsPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-5 py-3 text-sm font-medium whitespace-nowrap border-b-2 bg-transparent cursor-pointer transition-colors duration-200 -mb-px ${
+              className={`px-5 py-3 text-base font-medium whitespace-nowrap border-b-2 bg-transparent cursor-pointer transition-colors duration-200 -mb-px ${
                 activeTab === tab
-                  ? "text-[color:var(--text-primary)]  border-[color:var(--text-primary)]"
+                  ? "text-[color:var(--text-primary)]  border-[#F66F7D]"
                   : "text-[color:var(--text-secondary)] border-transparent hover:text-[color:var(--text-primary)]"
               }`}
             >

@@ -22,17 +22,17 @@ export default function AccountSettings({
 }: AccountSettingsProps) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-[color:var(--surface)] rounded-xl overflow-hidden">
+      <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D] rounded-xl overflow-hidden">
         {accountRows.map((item, index) => (
           <div
             key={item.label}
             className={`flex justify-between items-center px-6 py-[18px] ${
-              index < accountRows.length - 1 ? "border-b border-[color:var(--border)]" : ""
+              index < accountRows.length - 1 ? "" : ""
             }`}
           >
-            <span className="text-sm text-[color:var(--text-primary)]">{item.label}</span>
+            <span className="text-xl text-[#2C2C2C] dark:text-[#FFFFFF]">{item.label}</span>
             {item.value && (
-              <span className="text-sm text-[color:var(--text-secondary)]">{item.value}</span>
+              <span className="text-xl text-[#2C2C2C] dark:text-[#FFFFFF]">{item.value}</span>
             )}
           </div>
         ))}

@@ -40,7 +40,7 @@ export default function Navbar() {
   return (
     <div
       className={`sticky top-0 z-50 transition-colors duration-200 ${
-        isScrolled ? "bg-[#121212]" : "bg-[#FFFFFF0D]"
+        isScrolled ? "bg-white dark:dark:bg-[#121212]" : "bg-white dark:bg-[#FFFFFF0D]"
       }`}
     >
       {/* ─── Navbar ─── */}
@@ -110,7 +110,7 @@ export default function Navbar() {
 
           {/* Search Bar */}
           <div className={`flex items-center gap-2 px-4 py-1 rounded-full border transition-all duration-200 flex-1 max-w-[380px] 
-            ${searchFocused ? 'border-[#c9727a66] bg-[#2C2C2C]' : 'border-[#242424] bg-[#2C2C2C]'}`}>
+            ${searchFocused ? 'border-[#c9727a66] bg-[#F2F2F2] dark:bg-[#2C2C2C]' : 'dark:border-[#242424] bg-[#F2F2F2] dark:bg-[#2C2C2C]'}`}>
             <Search size={20} className={searchFocused ? "text-[#c9727a]" : "text-gray-500"} />
             <input
               value={searchValue}
@@ -118,7 +118,7 @@ export default function Navbar() {
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search stories, authors…"
-              className="flex-1 bg-[#2C2C2C] h-[40px] text-gray-300 text-sm focus:outline-none min-w-0 placeholder:text-[#D7D7D7]"
+              className="flex-1 bg-[#F2F2F2] dark:bg-[#2C2C2C] h-[40px] text-gray-300 text-sm focus:outline-none min-w-0 placeholder:text-[#D7D7D7]"
             />
           </div>
         </div>
@@ -131,11 +131,11 @@ export default function Navbar() {
         {/* RIGHT: Icons */}
         <div className="flex items-center gap-2 ml-auto">
           <button className="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Notifications">
-            <Bell size={40} className="text-white" />
+            <Bell size={40} className="text-[#121212] dark:text-white" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#c9727a] border-2 border-[#161616]" />
           </button>
           <button className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Profile">
-            <User size={40} className="text-white" />
+            <User size={40} className="text-[#121212] dark:text-white" />
           </button>
         </div>
       </nav>
