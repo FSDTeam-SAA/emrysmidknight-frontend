@@ -14,14 +14,14 @@ interface TrendingStoriesListProps {
 
 export function TrendingStoryItem({ story }: { story: Story }) {
   return (
-    <div className="!p-4 bg-[#FFFFFF0D] border !border-[#2C2C2C] rounded-[8px] cursor-pointer">
+    <div className="!p-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border dark:!border-[#2C2C2C] rounded-[8px] cursor-pointer">
       <div className="flex gap-4 items-start">
        
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-white text-base sm:text-lg lg:text-[24px]">
+          <h3 className="font-medium text-[#121212] dark:text-white text-base sm:text-lg lg:text-[24px]">
             {story.title}
           </h3>
-          <div className="flex items-center gap-1 mt-2 text-xs sm:text-sm text-[#D7D7D7]">
+          <div className="flex items-center gap-1 mt-2 text-xs sm:text-sm text-[#7D7D7D] dark:text-[#D7D7D7]">
             <span>{story.readCount}</span>
           </div>
         </div>
@@ -73,7 +73,7 @@ export function TrendingStoriesList({ stories }: TrendingStoriesListProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
+      <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
         Trending Stories
       </h2>
       <div className="space-y-2 sm:space-y-3">

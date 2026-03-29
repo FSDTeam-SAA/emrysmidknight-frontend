@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader'
+import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <NextTopLoader color="#F66F7D" height={3} showSpinner={false} />
+        <SmoothScrollProvider>
         {children}
+        </SmoothScrollProvider>
       </body>
     </html>
   );
