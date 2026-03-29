@@ -31,13 +31,13 @@ export function SuggestedAuthorCard({ author }: SuggestedAuthorCardProps) {
           />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="font-medium text-base sm:text-lg text-[#FFFFFF]">{author.name}</h3>
-          <p className="text-xs sm:text-sm text-[#D7D7D7] mt-1">{author.followers}</p>
+          <h3 className="font-medium text-base sm:text-xl text-[#121212] dark:text-[#FFFFFF]">{author.name}</h3>
+          <p className="text-xs sm:text-sm text-[#7D7D7D] mt-1">{author.followers}</p>
         </div>
       </div>
       <Button
         onClick={() => setIsFollowing(!isFollowing)}
-        className="ml-3 sm:ml-4 text-xs sm:text-sm bg-transparent font-normal text-[#F66F7D] border-[#F66F7D] h-8 sm:h-[37px] whitespace-nowrap"
+        className="ml-3 sm:ml-4 text-xs sm:text-sm bg-transparent font-normal text-[#F66F7D] border-[#F66F7D] h-8 sm:h-[37px] px-[15px] whitespace-nowrap"
       >
         {isFollowing ? 'Following' : 'Follow'}
       </Button>
@@ -86,10 +86,10 @@ export function SuggestedAuthorSection() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
+      <h2 className="dark:text-white text-[#121212] text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
         Suggested Authors
       </h2>
-      <div className="space-y-2 sm:space-y-3 bg-[#FFFFFF0D] rounded-[8px]">
+      <div className="space-y-2 sm:space-y-3 bg-[#FFFFFF] border border-[#D7D7D7] dark:border-[#2C2C2C] dark:bg-[#FFFFFF0D] rounded-[8px]">
         {suggestedAuthors.map((author) => (
           <SuggestedAuthorCard key={author.id} author={author} />
         ))}

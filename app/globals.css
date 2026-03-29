@@ -3,3 +3,38 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --page-bg: #121212;
+  --page-text: #f9fafb;
+  --surface: #1f2937;
+  --surface-alt: #111827;
+  --border: #374151;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --accent: #f87171;
+  --accent-strong: #ef4444;
+  --accent-soft: rgba(248, 113, 113, 0.12);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --page-bg: #F8F8F8;
+  --page-text: #111827;
+  --surface: #f3f4f6;
+  --surface-alt: #e5e7eb;
+  --border: #d1d5db;
+  --text-primary: #111827;
+  --text-secondary: #634b5c;
+  --text-muted: #6b7280;
+  --accent: #dc2626;
+  --accent-strong: #b91c1c;
+  --accent-soft: rgba(220, 38, 38, 0.12);
+  color-scheme: light;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--page-text);
+}
