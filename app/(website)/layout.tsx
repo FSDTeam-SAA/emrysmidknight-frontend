@@ -15,6 +15,10 @@ export default function RootLayout({
   const pathname = usePathname();
 
   const isSettingsPage = pathname.startsWith("/settings");
+  const isFollowingPage = pathname.startsWith("/following");
+
+  
+  const isFullWidthPage = isSettingsPage || isFollowingPage;
 
   return (
     <ThemeProvider>
@@ -32,14 +36,14 @@ export default function RootLayout({
             {/* Main Content */}
             <main
               className={`col-span-1 ${
-                isSettingsPage ? "lg:col-span-10" : "lg:col-span-6"
+                isFullWidthPage ? "lg:col-span-10" : "lg:col-span-6"
               }`}
             >
               {children}
             </main>
 
             {/* Right Sidebar */}
-            {!isSettingsPage && (
+            {!isFullWidthPage && (
               <aside className="hidden lg:block lg:col-span-4">
                 <Rightsideber />
               </aside>
