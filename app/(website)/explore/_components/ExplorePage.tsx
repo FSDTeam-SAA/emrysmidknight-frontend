@@ -29,7 +29,7 @@ const dummyPosts = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eleanor",
     timestamp: "2 hours ago",
     title: "Dragon's Awakening – Chapter 5",
-    content: `The mountains had always been quiet...`,
+    content: `The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.`,
     likes: 27,
     comments: 657,
     image:
@@ -42,7 +42,7 @@ const dummyPosts = [
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd",
     timestamp: "4 hours ago",
     title: "The Shadow Kingdom – Chapter 1",
-    content: `The moon hovered above the silent ruins of Eldoria...`,
+    content: `The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.`,
     likes: 27,
     comments: 657,
   },
@@ -75,14 +75,14 @@ export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState("Fantasy");
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="min-h-screen font-sans px-4">
       {/* Title */}
       <h1 className="text-[#121212] dark:text-white text-[28px] lg:text-[36px] font-bold mt-3 mb-5">
         Explore
       </h1>
 
       {/* Category Carousel */}
-      <div className="mb-6 w-[95%] mx-auto">
+      <div className="mb-6 mx-auto">
         <Carousel
           opts={{
             align: "start",
@@ -111,7 +111,7 @@ export default function ExplorePage() {
       </div>
 
       {/* Posts */}
-      <div className="flex flex-col items-center gap-4 justify-center px-0 lg:px-4">
+      <div className="flex flex-col items-center gap-4 justify-center">
         {dummyPosts.map((post, index) => (
           <StoryPost
             key={index}

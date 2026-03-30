@@ -44,7 +44,7 @@ const authors: Author[] = [
 export function TopAuthorSection() {
   return (
     <div className="w-full rounded-lg">
-      <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
+      <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium sm:mb-5">
         Top Author
       </h2>
 
@@ -60,7 +60,7 @@ export function TopAuthorSection() {
                 alt={author.name}
                 width={1000}
                 height={1000}
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-full rounded-l-[8px]"
               />
             </div>
 

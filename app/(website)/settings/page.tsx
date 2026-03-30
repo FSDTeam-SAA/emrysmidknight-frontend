@@ -7,8 +7,9 @@ import NotificationSettings from "./_components/NotificationSettings";
 import Preferences from "./_components/Preferences";
 import SecuritySettings from "./_components/SecuritySettings";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { PaymentMethods } from "./_components/PaymentMethods";
 
-const tabs = ["Account Settings", "Notification Settings", "Security Settings", "Preferences"];
+const tabs = ["Account Settings", "Notification Settings", "Security Settings", "Preferences", "Payment Methods"];
 
 /* ─── Main Page ───────────────────────────────────────────── */
 export default function SettingsPage() {
@@ -114,6 +115,11 @@ export default function SettingsPage() {
             onToggleLoginAlerts={() => setLoginAlerts((prev) => !prev)}
           />
         )}
+        {
+          activeTab === "Payment Methods" && (
+            <PaymentMethods />
+          )
+        }
 
         {/* ── PREFERENCES ── */}
         {activeTab === "Preferences" && (

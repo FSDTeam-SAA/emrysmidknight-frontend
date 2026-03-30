@@ -73,7 +73,7 @@ export function TrendingStoriesList({ stories }: TrendingStoriesListProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-10">
+      <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-5">
         Trending Stories
       </h2>
       <div className="space-y-2 sm:space-y-3">
