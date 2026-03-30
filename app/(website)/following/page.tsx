@@ -79,7 +79,7 @@ export default function FollowingPage() {
 
   return (
     <main
-      className={` px-4 py-10 sm:px-8 lg:px-4 overflow-visible`}
+      className={` px-1 py-10 sm:px-4 lg:px-2 overflow-visible`}
     >
       {/* ── Header ── */}
       <div className="mb-10">
@@ -93,7 +93,7 @@ export default function FollowingPage() {
       {/* ── Grid ── */}
       <div
         className="
-          grid gap-6
+          grid gap-6                                                                                                                   
           grid-cols-1
           sm:grid-cols-2
           lg:grid-cols-2
