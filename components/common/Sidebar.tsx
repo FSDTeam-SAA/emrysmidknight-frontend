@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 const navigationItems = [
-  { name: 'Home', icon: Home, href: '/', color: 'text-[#121212]' },
+  { name: 'Home', icon: Home, href: '/', color: '' },
   { name: 'Explore', icon: Compass, href: '/explore' },
   { name: 'Subscriptions', icon: Bell, href: '/subscriptions' },
   { name: 'Bookmarks', icon: Bookmark, href: '/bookmarks' },
@@ -17,7 +17,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-full min-h-screen mt-5">
+    <div className="w-full min-h-screen mt-8">
       <nav className="space-y-4">
         {navigationItems.map((item) => {
           const Icon = item.icon
@@ -27,7 +27,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group ${
                 isActive ? "bg-[#FEF1F2]" : "hover:bg-gray-100"
               }`}
             >

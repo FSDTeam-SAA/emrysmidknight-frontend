@@ -166,13 +166,13 @@ export default function SubscriptionManagement() {
       </h1>
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Tab Switcher — matches image exactly */}
-        <div className="flex rounded-[8px] overflow-hidden p-1 gap-1 bg-[#FFFFFF]">
+        <div className="flex rounded-[8px] overflow-hidden p-1 gap-1 bg-[#FFFFFF] dark:bg-[#FFFFFF0D]">
           <button
             onClick={() => setActiveTab("single")}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               activeTab === "single"
-                ? "bg-[#FCD2D7] text-black"
-                : "text-[#F66F7D] hover:bg-[#FCD2D7] hover:text-black"
+                ? "bg-[#FCD2D7] dark:bg-[#F66F7D] text-black dark:text-white"
+                : "text-[#F66F7D] hover:bg-[#FCD2D7] dark:hover:bg-[#F66F7D] hover:text-black"
             }`}
           >
             Single Post
@@ -181,8 +181,8 @@ export default function SubscriptionManagement() {
             onClick={() => setActiveTab("author")}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               activeTab === "author"
-                ? "bg-[#FCD2D7] text-black"
-                : "text-[#F66F7D] hover:bg-[#FCD2D7] hover:text-black"
+                ? "bg-[#FCD2D7] dark:bg-[#F66F7D] text-black dark:text-white"
+                : "text-[#F66F7D] hover:bg-[#FCD2D7] dark:hover:bg-[#F66F7D] hover:text-black"
             }`}
           >
             Author
@@ -191,9 +191,9 @@ export default function SubscriptionManagement() {
 
         {/* Author Table */}
         {activeTab === "author" && (
-          <div className="rounded-lg overflow-hidden bg-white border border-gray-100 shadow-sm">
+          <div className="rounded-lg overflow-hidden dark:bg-[#FFFFFF0D] bg-[#FFFFFF]">
             {/* Table Header */}
-            <div className="grid grid-cols-4 px-6 py-4 border-b border-gray-200">
+            <div className="grid grid-cols-4 px-6 py-4 border-b dark:border-[#5E5E5E] border-[#D7D7D7]">
               {[
                 { label: "Author", align: "text-left" },
                 { label: "Plan", align: "text-center" },
@@ -202,7 +202,7 @@ export default function SubscriptionManagement() {
               ].map((h) => (
                 <span
                   key={h.label}
-                  className={`text-[#111111] font-medium leading-[120%] text-[16px] ${h.align}`}
+                  className={`text-[#111111] dark:text-white font-medium leading-[120%] text-[16px] ${h.align}`}
                 >
                   {h.label}
                 </span>
@@ -210,22 +210,22 @@ export default function SubscriptionManagement() {
             </div>
 
             {/* Table Rows */}
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y dark:divide-[#5E5E5E] divide-[#D7D7D7]">
               {subscriptions.map((row) => (
                 <div
                   key={row.id}
-                  className="grid grid-cols-4 px-6 py-5 items-start hover:bg-gray-50 transition-colors"
+                  className="grid grid-cols-4 px-6 py-5 items-start hover:bg-[#FFFFFF0D] transition-colors"
                 >
-                  <span className="text-[#111111] text-[16px] leading-[120%]">
+                  <span className="text-[#111111] dark:text-white text-[16px] leading-[120%]">
                     {row.author}
                   </span>
-                  <span className="text-[#111111] text-[16px] text-center leading-[120%] px-2">
+                  <span className="text-[#111111] dark:text-white text-[16px] text-center leading-[120%] px-2">
                     {row.plan}
                   </span>
-                  <span className="text-[#111111] text-[16px] text-center leading-[120%]">
+                  <span className="text-[#111111] dark:text-white text-[16px] text-center leading-[120%]">
                     {row.amount}
                   </span>
-                  <span className="text-[#111111] text-[16px] text-right leading-[120%]">
+                  <span className="text-[#111111] dark:text-white text-[16px] text-right leading-[120%]">
                     {row.date}
                   </span>
                 </div>
