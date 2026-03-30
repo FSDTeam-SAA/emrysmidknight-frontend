@@ -17,7 +17,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-full min-h-screen p-6 ">
+    <div className="w-full min-h-screen  ">
       <nav className="space-y-4">
         {navigationItems.map((item) => {
           const Icon = item.icon
