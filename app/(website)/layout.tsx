@@ -15,6 +15,7 @@ export default function RootLayout({
   const pathname = usePathname();
 
   const isSettingsPage = pathname.startsWith("/settings");
+  
 
   return (
     <ThemeProvider>
