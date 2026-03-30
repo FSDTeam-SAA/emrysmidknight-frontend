@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MessageCircle, Bookmark, MoreHorizontal } from "lucide-react";
+import { MessageCircle, Bookmark, MoreHorizontal, ThumbsUp } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -39,9 +39,9 @@ export function StoryPost({
     expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
 
   return (
-    <div className="w-full max-w-2xl bg-[#FFFFFF] dark:bg-[#FFFFFF0D] rounded-[8px] p-6 text-white">
+    <div className="w-full max-w-2xl bg-[#FFFFFF] dark:bg-[#FFFFFF0D] rounded-[8px] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 p-3">
         <div className="flex items-center gap-3">
           <Avatar className="h-[44px] w-[44px]">
             <AvatarImage src={avatar} alt={author} />
@@ -69,12 +69,12 @@ export function StoryPost({
       </div>
 
       {/* Title */}
-      <h2 className="text-xl font-bold mb-3 text-[#121212] dark:text-white leading-6">
+      <h2 className="text-xl font-bold mb-3 text-[#121212] dark:text-white leading-6 px-3">
         {title}
       </h2>
 
       {/* Content */}
-      <p className="text-base text-[#121212] dark:text-[#D7D7D7] leading-6 mb-4 whitespace-pre-wrap">
+      <p className="text-base text-[#121212] dark:text-[#D7D7D7] leading-6 mb-4 whitespace-pre-wrap px-3">
         {displayedContent}
         {isLong && (
           <button
@@ -88,7 +88,7 @@ export function StoryPost({
 
       {/* Image */}
       {image && !video && (
-        <div className="mb-4 rounded-[8px] overflow-hidden">
+        <div className="mb-4 overflow-hidden">
           <Image
             width={500}
             height={380}
@@ -101,7 +101,7 @@ export function StoryPost({
 
       {/* Video */}
       {video && (
-        <div className="mb-4 rounded-[8px] overflow-hidden">
+        <div className="mb-4 overflow-hidden">
           <video
             src={video}
             controls
@@ -111,17 +111,19 @@ export function StoryPost({
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#5E5E5E] text-zinc-500">
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#5E5E5E] text-zinc-500 p-3">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5" />
-            <span className="text-sm font-semibold text-white">
+            <ThumbsUp  className="h-5 w-5" />
+            <span className="text-sm font-semibold dark:text-white text-black">
               {likes.toLocaleString()}k
             </span>
           </div>
           <div className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
-            <span className="text-sm font-semibold text-white">{comments}</span>
+            <span className="text-sm font-semibold dark:text-white text-black">
+              {comments}
+            </span>
           </div>
         </div>
         <Button

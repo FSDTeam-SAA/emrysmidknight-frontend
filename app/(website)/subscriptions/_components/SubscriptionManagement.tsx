@@ -160,8 +160,8 @@ export default function SubscriptionManagement() {
   const [activeTab, setActiveTab] = useState<Tab>("single");
 
   return (
-    <div className="min-h-screen px-4 py-6">
-      <h1 className="text-[#121212] dark:text-[#FFFF] lg:text-[40px] md:text-[30px] font-bold mb-10">
+    <div className="min-h-screen px-4">
+      <h1 className="text-[#121212] dark:text-[#FFFF] lg:text-[40px] md:text-[30px] font-bold mb-10 mt-3">
         Subscription
       </h1>
       <div className="max-w-2xl mx-auto space-y-4">
@@ -171,8 +171,8 @@ export default function SubscriptionManagement() {
             onClick={() => setActiveTab("single")}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               activeTab === "single"
-                ? "bg-[#E8634A] text-white"
-                : "text-[#E8634A] hover:bg-[#E8634A] hover:text-white"
+                ? "bg-[#FCD2D7] text-black"
+                : "text-[#F66F7D] hover:bg-[#FCD2D7] hover:text-black"
             }`}
           >
             Single Post
@@ -181,8 +181,8 @@ export default function SubscriptionManagement() {
             onClick={() => setActiveTab("author")}
             className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               activeTab === "author"
-                ? "bg-[#E8634A] text-white"
-                : "text-[#E8634A] hover:bg-[#E8634A] hover:text-white"
+                ? "bg-[#FCD2D7] text-black"
+                : "text-[#F66F7D] hover:bg-[#FCD2D7] hover:text-black"
             }`}
           >
             Author
@@ -236,7 +236,7 @@ export default function SubscriptionManagement() {
 
         {/* Single Post placeholder */}
         {activeTab === "single" && (
-          <div className="rounded-2xl text-start text-[#5E5E6A] text-sm">
+          <div className="rounded-2xl text-start text-[#5E5E6A] mb-4 text-sm flex flex-col gap-6">
             {dummyPosts.map((post, index) => (
               <StoryPost
                 key={index}

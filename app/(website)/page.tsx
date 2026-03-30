@@ -52,7 +52,7 @@ const dummyPosts = [
 export default function Home() {
   return (
     <div className="py-8">
-      <div className="flex flex-col items-center justify-center gap-6 px-0 lg:px-4">
+      <div className="flex flex-col items-center gap-4 justify-center px-0 lg:px-4">
         {dummyPosts.map((post, index) => (
           <StoryPost
             key={index}

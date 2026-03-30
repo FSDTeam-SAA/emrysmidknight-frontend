@@ -17,7 +17,7 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-full min-h-screen p-6 ">
+    <div className="w-full min-h-screen mt-5">
       <nav className="space-y-4">
         {navigationItems.map((item) => {
           const Icon = item.icon
@@ -35,8 +35,8 @@ export default function Sidebar() {
                 size={24}
                 className={
                   isActive
-                    ? "text-[#F66F7D]"
-                    : item.color || "text-[#121212] dark:text-white group-hover:text-[#F66F7D]"
+                    ? "text-[#F66F7D] text-[20px] font-medium leading-[120%]"
+                    : item.color || "text-[#121212] dark:text-white group-hover:text-[#F66F7D] text-[20px] font-medium leading-[120%]"
                 }
               />
               <span
