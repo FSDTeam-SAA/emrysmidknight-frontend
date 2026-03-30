@@ -1,14 +1,30 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
-import { 
-  Search, Bell, User, Menu, X, BookOpen, TrendingUp, Star, Feather, Home, Compass, Tag, Users 
+import {
+  Search,
+  Bell,
+  User,
+  Menu,
+  X,
+  BookOpen,
+  TrendingUp,
+  Star,
+  Feather,
+  Home,
+  Compass,
+  Tag,
+  Users,
 } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
 import Image from "next/image";
 import Rightsideber from "@/components/common/Rightsideber";
-
-
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { icon: Home, label: "Home" },
@@ -22,9 +38,11 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeIcon, setActiveIcon] = useState<"bell" | "user" | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,23 +54,35 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleIconClick = (icon: "bell" | "user") => {
+    setActiveIcon(icon);
+    if (icon === "bell") {
+      router.push("/notification");
+    } else {
+      router.push("/profile");
+    }
+  };
 
   return (
     <div
       className={`sticky top-0 z-50 transition-colors duration-200 ${
-        isScrolled ? "bg-white dark:dark:bg-[#121212]" : "bg-white dark:bg-[#FFFFFF0D]"
+        isScrolled
+          ? "bg-white dark:dark:bg-[#121212]"
+          : "bg-white dark:bg-[#FFFFFF0D]"
       }`}
     >
       {/* ─── Navbar ─── */}
       <nav className=" container mx-auto  flex items-center justify-between py-4 px-4 md:px-6 ">
-        
         {/* LEFT: Hamburger + Search */}
         <div className="flex items-center flex-1 gap-2">
           {/* Mobile Hamburger */}
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <button className="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Open menu">
+                <button
+                  className="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]"
+                  aria-label="Open menu"
+                >
                   <Menu size={20} className="text-gray-400" />
                 </button>
               </SheetTrigger>
@@ -65,7 +95,10 @@ export default function Navbar() {
                 <div className="flex items-center justify-between p-5 border-b border-[#242424]">
                   <span className="text-white font-medium">Menu</span>
                   <SheetClose asChild>
-                    <button className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Close menu">
+                    <button
+                      className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]"
+                      aria-label="Close menu"
+                    >
                       <X size={18} className="text-gray-400" />
                     </button>
                   </SheetClose>
@@ -96,25 +129,33 @@ export default function Navbar() {
                       </a>
                     ))}
                   </nav>
-
                 </div>
 
                 {/* Footer Buttons */}
                 <div className="flex gap-2 p-4 border-t border-[#242424]">
-                  <button className="flex-1 px-3 py-2 text-sm font-medium text-gray-400 border border-[#333] rounded-lg hover:bg-[#222]">Sign in</button>
-                  <button className="flex-1 px-3 py-2 text-sm font-medium text-white bg-[#c9727a] rounded-lg hover:bg-[#b6616c]">Get started</button>
+                  <button className="flex-1 px-3 py-2 text-sm font-medium text-gray-400 border border-[#333] rounded-lg hover:bg-[#222]">
+                    Sign in
+                  </button>
+                  <button className="flex-1 px-3 py-2 text-sm font-medium text-white bg-[#c9727a] rounded-lg hover:bg-[#b6616c]">
+                    Get started
+                  </button>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
 
           {/* Search Bar */}
-          <div className={`flex items-center gap-2 px-4 py-1 rounded-full border transition-all duration-200 flex-1 max-w-[380px] 
-            ${searchFocused ? 'border-[#c9727a66] bg-[#F2F2F2] dark:bg-[#2C2C2C]' : 'dark:border-[#242424] bg-[#F2F2F2] dark:bg-[#2C2C2C]'}`}>
-            <Search size={20} className={searchFocused ? "text-[#c9727a]" : "text-gray-500"} />
+          <div
+            className={`flex items-center gap-2 px-4 py-1 rounded-full border transition-all duration-200 flex-1 max-w-[380px] 
+            ${searchFocused ? "border-[#c9727a66] bg-[#F2F2F2] dark:bg-[#2C2C2C]" : "dark:border-[#242424] bg-[#F2F2F2] dark:bg-[#2C2C2C]"}`}
+          >
+            <Search
+              size={20}
+              className={searchFocused ? "text-[#c9727a]" : "text-gray-500"}
+            />
             <input
               value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
+              onChange={(e) => setSearchValue(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder="Search stories, authors…"
@@ -125,17 +166,46 @@ export default function Navbar() {
 
         {/* CENTER: Logo */}
         <div className="absolute w-[74px] h-[50px] left-1/2 transform -translate-x-1/2 hidden md:flex">
-          <Image src="/logo.png" alt="Logo" width={1000} height={1000} className="w-full h-full object-cover" />
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={1000}
+            height={1000}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         {/* RIGHT: Icons */}
         <div className="flex items-center gap-2 ml-auto">
-          <button className="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Notifications">
-            <Bell size={40} className="text-[#121212] dark:text-white" />
+          <button
+            onClick={() => handleIconClick("bell")}
+            className="relative flex items-center justify-center w-9 h-9 rounded-full"
+            aria-label="Notifications"
+          >
+            <Bell
+              size={40}
+              className={`transition-colors duration-150 ${
+                activeIcon === "bell"
+                  ? "text-[#F66F7D]"
+                  : "text-[#121212] dark:text-white hover:text-[#F66F7D]"
+              }`}
+            />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#c9727a] border-2 border-[#161616]" />
           </button>
-          <button className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Profile">
-            <User size={40} className="text-[#121212] dark:text-white" />
+
+          <button
+            onClick={() => handleIconClick("user")}
+            className="flex items-center justify-center w-9 h-9 rounded-full"
+            aria-label="Profile"
+          >
+            <User
+              size={40}
+              className={`transition-colors duration-150 ${
+                activeIcon === "user"
+                  ? "text-[#F66F7D]"
+                  : "text-[#121212] dark:text-white hover:text-[#F66F7D]"
+              }`}
+            />
           </button>
         </div>
       </nav>
@@ -145,7 +215,10 @@ export default function Navbar() {
         <div className="flex items-center justify-end">
           <Sheet>
             <SheetTrigger asChild>
-              <button className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 bg-[#1e1e1e] border border-[#2a2a2a] rounded-md hover:bg-[#232323]" aria-label="Open sidebar menu">
+              <button
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 bg-[#1e1e1e] border border-[#2a2a2a] rounded-md hover:bg-[#232323]"
+                aria-label="Open sidebar menu"
+              >
                 <Menu size={16} className="text-gray-400" />
                 Menu
               </button>
@@ -158,7 +231,10 @@ export default function Navbar() {
               <div className="flex items-center justify-between p-5 border-b border-[#242424]">
                 <span className="text-white font-medium">Sidebar</span>
                 <SheetClose asChild>
-                  <button className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]" aria-label="Close sidebar">
+                  <button
+                    className="flex items-center justify-center w-9 h-9 rounded-full hover:bg-[#c9727a1f]"
+                    aria-label="Close sidebar"
+                  >
                     <X size={18} className="text-gray-400" />
                   </button>
                 </SheetClose>
@@ -170,7 +246,6 @@ export default function Navbar() {
           </Sheet>
         </div>
       </div>
-
     </div>
   );
 }

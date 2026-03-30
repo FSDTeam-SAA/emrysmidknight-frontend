@@ -16,9 +16,10 @@ export default function RootLayout({
 
   const isSettingsPage = pathname.startsWith("/settings");
   const isFollowingPage = pathname.startsWith("/following");
+  const isProfilePage = pathname.startsWith("/profile");
 
   
-  const isFullWidthPage = isSettingsPage || isFollowingPage;
+  const isFullWidthPage = isSettingsPage || isFollowingPage || isProfilePage;
 
   return (
     <ThemeProvider>
