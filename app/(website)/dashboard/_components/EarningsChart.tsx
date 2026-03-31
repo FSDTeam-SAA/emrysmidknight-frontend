@@ -8,7 +8,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
 } from 'recharts'
 
 const chartData = [
@@ -44,6 +43,7 @@ const chartData = [
   { date: '30', value: 68 },
 ]
 
+//eslint-disable-next-line
 const CustomTooltip = (props: any) => {
   const { active, payload } = props
   
