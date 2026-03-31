@@ -55,27 +55,27 @@ export function StoryPost({
   const likeDisplay = `${likes}K`;
 
   return (
-    <div className="w-full max-w-2xl bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl text-white relative overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+    <div className="w-full max-w-2xl dark:bg-[#1a1a1a] bg-[#FFFFFF] rounded-2xl text-white relative overflow-hidden">
       {/* ── Blurred content layer ── */}
       <div>
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5">
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border border-white/10">
+            <Avatar className="h-10 w-10">
               <AvatarImage src={avatar} alt={author} />
               <AvatarFallback>{author.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <h3 className="font-semibold text-base text-white leading-5">{author}</h3>
+              <h3 className="font-semibold text-base dark:text-white text-[#121212] leading-5">{author}</h3>
               <p className="text-[#9a9a9a] text-xs">@{handle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[#D7D7D7] text-sm">{timestamp}</span>
+            <span className="dark:text-[#D7D7D7] text-[#121212] text-sm">{timestamp}</span>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-[#8c8c8c] hover:text-white hover:bg-white/10"
+              className="h-8 w-8 dark:text-[#8c8c8c] text-[#121212] hover:text-white hover:bg-white/10"
             >
               <MoreHorizontal className="h-6 w-6 dark:text-[#D7D7D7] text-black font-bold" />
             </Button>
@@ -83,7 +83,7 @@ export function StoryPost({
         </div>
 
         {/* Title */}
-        <h2 className="px-5 pt-4 text-lg font-semibold text-white leading-6">
+        <h2 className="px-5 pt-4 text-lg font-semibold dark:text-white text-[#121212] leading-6">
           {title}
         </h2>
 
@@ -91,7 +91,7 @@ export function StoryPost({
           className={`transition-all duration-300 ${isLocked ? "blur-sm pointer-events-none select-none" : ""}`}
         >
           {/* Content */}
-          <p className="px-5 pt-3 text-sm leading-6 text-[#c9c9c9] whitespace-pre-wrap">
+          <p className="px-5 pt-3 text-sm leading-6 dark:text-[#c9c9c9] text-[#121212] whitespace-pre-wrap">
             {displayedContent}
             {isLong && !isLocked && (
               <button
@@ -106,13 +106,13 @@ export function StoryPost({
           {/* Image */}
           {image && !video && (
             <div className="mt-4 px-5">
-              <div className="overflow-hidden rounded-xl border border-[#2a2a2a]">
+              <div className="overflow-hidden">
                 <Image
                   width={500}
                   height={380}
                   src={image}
                   alt="Post image"
-                  className="h-[240px] w-full object-cover"
+                  className="h-[360px] w-full object-cover"
                 />
               </div>
             </div>
@@ -131,15 +131,15 @@ export function StoryPost({
         </div>
 
         {/* Footer */}
-        <div className="mt-5 flex items-center justify-between border-t border-[#2a2a2a] px-5 py-4 text-[#8c8c8c]">
+        <div className="mt-5 flex items-center justify-between border-t border-[#D7D7D7] px-5 py-4 text-[#8c8c8c]">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <ThumbsUp className="h-4 w-4" />
-              <span className="text-sm font-semibold text-white">{likeDisplay}</span>
+              <span className="text-sm font-semibold dark:text-white text-[#121212]">{likeDisplay}</span>
             </div>
             <div className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4" />
-              <span className="text-sm font-semibold text-white">{comments}</span>
+              <span className="text-sm font-semibold dark:text-white text-[#121212]">{comments}</span>
             </div>
           </div>
 
