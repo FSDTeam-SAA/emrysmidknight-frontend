@@ -7,7 +7,7 @@ import { PlansTable } from "./_components/PlansTable";
 
 const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan"];
 
-export default function page() {
+export default function Page() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
