@@ -92,103 +92,47 @@ const subscriptionData: SubscriptionData[] = [
 
 export default function SubscriptionTable() {
   return (
-    <div className="w-full ">
-      <div className="flex flex-col gap-4 sm:gap-6">
-        {/* Table Container */}
-        <div className="w-full bg-[#FFFFFF] dark:bg-[#FFFFFF0D] overflow-hidden   rounded-[8px] bg-card">
-          {/* Desktop View */}
-          <div className="hidden sm:block overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-muted/40 border-b border-[#5E5E5E]">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="px-4 py-4 text-left text-xl font-semibold text-[#121212] dark:text-[#FFFFFF] w-1/4">
-                    Reader
-                  </TableHead>
-                  <TableHead className="px-4 py-4 text-left text-xl font-semibold text-[#121212] dark:text-[#FFFFFF] w-1/3">
-                    Plan
-                  </TableHead>
-                  <TableHead className="px-4 py-4 text-left text-xl font-semibold text-[#121212] dark:text-[#FFFFFF] w-1/6">
-                    Amount
-                  </TableHead>
-                  <TableHead className="px-4 py-4 text-left text-xl font-semibold text-[#121212] dark:text-[#FFFFFF] w-1/4">
-                    Date
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {subscriptionData.map((item) => (
-                  <TableRow
-                    key={item.id}
-                    className="border-b border-[#1E1E1E] dark:border-[#5E5E5E] last:border- hover:bg-muted/20 transition-colors"
-                  >
-                    <TableCell className="px-4 py-4 text-base text-[#121212] dark:text-[#FFFFFF] font-medium">
-                      {item.reader}
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-base text-[#121212] dark:text-[#FFFFFF]">
-                      {item.plan}
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-base text-[#121212] dark:text-[#FFFFFF] font-medium">
-                      {item.amount}
-                    </TableCell>
-                    <TableCell className="px-4 py-4 text-base text-[#121212] dark:text-[#FFFFFF]">
-                      {item.date}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+    <div className="w-full bg-[#FFFFFF] dark:bg-[#FFFFFF0D] px-4 sm:px-6 py-2 rounded-[8px] overflow-x-auto">
+      <Table className="w-full min-w-[700px]">
+        <TableHeader>
+          <TableRow className="border-[#1E1E1E] dark:border-[#5E5E5E] hover:bg-transparent">
+            <TableHead className="text-[#121212] dark:text-[#FFFFFF] font-semibold text-lg sm:text-xl">
+              Reader
+            </TableHead>
+            <TableHead className="text-[#121212] dark:text-[#FFFFFF] font-semibold text-lg sm:text-xl">
+              Plan
+            </TableHead>
+            <TableHead className="text-[#121212] dark:text-[#FFFFFF] font-semibold text-lg sm:text-xl text-right">
+              Amount
+            </TableHead>
+            <TableHead className="text-[#121212] dark:text-[#FFFFFF] font-semibold text-lg sm:text-xl text-right">
+              Date
+            </TableHead>
+          </TableRow>
+        </TableHeader>
 
-          {/* Mobile View - Card Layout */}
-          <div className="sm:hidden divide-y divide-border">
-            {subscriptionData.map((item) => (
-              <div
-                key={item.id}
-                className="px-4 py-4 space-y-2 hover:bg-muted/20 transition-colors"
-              >
-                <div className="flex justify-between items-start gap-2">
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Reader
-                    </p>
-                    <p className="text-sm font-semibold text-foreground mt-1">
-                      {item.reader}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex justify-between items-start gap-2">
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Plan
-                    </p>
-                    <p className="text-sm text-foreground mt-1">
-                      {item.plan}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Amount
-                    </p>
-                    <p className="text-sm font-semibold text-foreground mt-1">
-                      {item.amount}
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      Date
-                    </p>
-                    <p className="text-sm text-foreground mt-1">
-                      {item.date}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+        <TableBody>
+          {subscriptionData.map((item) => (
+            <TableRow
+              key={item.id}
+              className="border-[#1E1E1E] dark:border-[#5E5E5E] hover:bg-card/50 transition-colors"
+            >
+              <TableCell className="text-[#2c2c2c] dark:text-[#FFFFFF] text-sm sm:text-base font-normal py-4">
+                {item.reader}
+              </TableCell>
+              <TableCell className="text-[#2c2c2c] dark:text-[#FFFFFF] text-sm sm:text-base font-normal py-4">
+                {item.plan}
+              </TableCell>
+              <TableCell className="text-[#2c2c2c] dark:text-[#FFFFFF] text-sm sm:text-base font-normal text-right py-4">
+                {item.amount}
+              </TableCell>
+              <TableCell className="text-[#2c2c2c] dark:text-[#FFFFFF] text-sm sm:text-base font-normal text-right py-4">
+                {item.date}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }

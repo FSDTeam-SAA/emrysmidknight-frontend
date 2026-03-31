@@ -5,56 +5,55 @@ import SubscriptionTable from "./_components/SubscriptionTable";
 import { TransactionsTable } from "./_components/TransactionsTable";
 import { PlansTable } from "./_components/PlansTable";
 
-const tabs = ["Overview", "Subscribers", "Primium Unlocks","Subscriptions Plan"];
+const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan"];
 
-/* ─── Main Page ────────────────── */
-export default function SettingsPage() {
+export default function Page() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+
   return (
-    <div className="min-h-screen text-[color:var(--page-text)] font-sans px-6 lg:px-0 py-10">
+    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:py-10">
       <div className="container mx-auto">
 
         {/* Title */}
-        <h1 className="text-3xl lg:text-[40px] font-semibold text-[color:var(--page-text)] mb-7">Dashboard</h1>
+        <h1 className="mb-5 text-2xl font-semibold text-[color:var(--page-text)] sm:text-3xl lg:mb-7 lg:text-[40px]">
+          Dashboard
+        </h1>
 
-        {/* Tabs */}
-        <div className="flex border-b border-[color:var(--border)] mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-3 text-base font-medium whitespace-nowrap border-b-2 bg-transparent cursor-pointer transition-colors duration-200 -mb-px ${
-                activeTab === tab
-                  ? "text-[color:var(--text-primary)]  border-[#F66F7D]"
-                  : "text-[color:var(--text-secondary)] border-transparent hover:text-[color:var(--text-primary)]"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        {/* Tabs (Scrollable on mobile) */}
+        <div className="relative mb-6 border-b border-[color:var(--border)]">
+          
+          {/* Scroll wrapper */}
+          <div className="no-scrollbar -mx-2 overflow-x-auto px-2">
+            <div className="flex min-w-max gap-1 sm:gap-2">
+
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`whitespace-nowrap border-b-2 bg-transparent px-4 py-3 text-xs font-medium transition-colors duration-200 sm:px-5 sm:text-base ${
+                    activeTab === tab
+                      ? "border-[#F66F7D] text-[color:var(--text-primary)]"
+                      : "border-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+
+            </div>
+          </div>
+
+          {/* Scroll indicator (RIGHT SIDE SHADOW) */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white dark:from-[#0a0a0a] to-transparent" />
         </div>
 
-        {/* ── OVERVIEW ── */}
-        {activeTab === "Overview" && (
-           <DashboardPage />
-        )}
-
-        {/* ── SUBSCRIBERS ── */}
-        {activeTab === "Subscribers" && (
-       <SubscriptionTable/>
-        )}
-
-        {/* ── SECURITY SETTINGS ── */}
-        {activeTab === "Primium Unlocks" && (
-       <TransactionsTable/>
-        )}
-
-        {/* ── SECURITY SETTINGS ── */}
-        {activeTab === "Subscriptions Plan" && (
-       <PlansTable/>
-        )}
-        
-
+        {/* CONTENT */}
+        <div className="w-full overflow-hidden">
+          {activeTab === "Overview" && <DashboardPage />}
+          {activeTab === "Subscribers" && <SubscriptionTable />}
+          {activeTab === "Primium Unlocks" && <TransactionsTable />}
+          {activeTab === "Subscriptions Plan" && <PlansTable />}
+        </div>
       </div>
     </div>
   );

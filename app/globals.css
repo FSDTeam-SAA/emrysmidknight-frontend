@@ -38,3 +38,12 @@ body {
   background: var(--page-bg);
   color: var(--page-text);
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
