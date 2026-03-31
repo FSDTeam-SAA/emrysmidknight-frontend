@@ -19,7 +19,8 @@ const allStories = [
       "The night was silent, and the wind whispered through the trees...",
     likes: 27,
     comments: 657,
-    image: "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=500&h=380&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=500&h=380&fit=crop",
     locked: false,
   },
   {
@@ -33,7 +34,8 @@ const allStories = [
       "In the vast expanse of space, two civilizations clashed in a battle for supremacy...",
     likes: 27,
     comments: 657,
-    image: "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=500&h=380&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=500&h=380&fit=crop",
     locked: true,
   },
   // add more stories...
@@ -63,10 +65,12 @@ export default function StoriesPage() {
 
   return (
     <div className="min-h-screen bg-[color:var(--page-bg)] text-[color:var(--page-text)]">
-      <div className="w-full px-1 py-6 lg:py-10">
+      <div className="w-full px-1">
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3 mb-6">
-          <h1 className="text-lg font-semibold text-[color:var(--text-primary)]">Stories</h1>
+          <h1 className="text-lg font-semibold text-[color:var(--text-primary)]">
+            Stories
+          </h1>
           <Button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             variant="ghost"
@@ -86,47 +90,45 @@ export default function StoriesPage() {
 
         <div className="grid gap-6 lg:grid-cols-[370px_minmax(0,1fr)]">
           {/* Sidebar */}
-          <aside
-            className={`${
-              isMobileMenuOpen ? "block" : "hidden"
-            } lg:block lg:sticky lg:top-[80px] h-fit `}
-          >
+          <aside>
             <div className="space-y-6">
               {/* Profile Section */}
-              <div className="rounded-2xl bg-[#FFFFFF0D] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.12)]">
+              <div className="rounded-[8px] p-6 bg-[#FFFFFF]">
                 <h2 className="text-[32px] font-semibold text-[color:var(--text-primary)] mb-3">
                   Personal details
                 </h2>
                 <p className="text-[color:var(--text-secondary)] text-base leading-6 mb-6">
-                  Sci-Fi writer exploring futuristic technology and alternate realities.
+                  Sci-Fi writer exploring futuristic technology and alternate
+                  realities. Loves crafting suspenseful short stories that
+                  engage readers and spark imagination.
                 </p>
 
                 <div className="space-y-3 text-xl">
                   <div>
-                    <span className="text-[color:var(--text-primary)] font-semibold">Followers: </span>
-                    <span className="text-[color:var(--text-secondary)]">35K</span>
+                    <span className="text-[#121212]">Followers: </span>
+                    <span className="text-[#121212]">35K</span>
                   </div>
                   <div>
-                    <span className="text-[color:var(--text-primary)] font-semibold">Total Stories: </span>
-                    <span className="text-[color:var(--text-secondary)]">19</span>
+                    <span className="text-[#121212]">Total Stories: </span>
+                    <span className="text-[#121212]">19</span>
                   </div>
                   <div>
-                    <span className="text-[color:var(--text-primary)] font-semibold">Email: </span>
-                    <span className="text-[color:var(--text-secondary)]">graham@example.com</span>
+                    <span className="text-[#121212]">Email: </span>
+                    <span className="text-[#121212]">graham@example.com</span>
                   </div>
                 </div>
               </div>
 
               {/* Collections */}
-              <div className=" p-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-[color:var(--text-primary)] mb-4">
+              <div className="">
+                {/* <h3 className="text-sm font-semibold uppercase tracking-wide text-[color:var(--text-primary)] mb-4">
                   Collections
-                </h3>
+                </h3> */}
                 <div className="space-y-2">
                   {collections.map((collection, idx) => (
                     <button
                       key={idx}
-                      className="w-full flex items-center justify-between rounded-[8px] bg-[#FFFFFF]  dark:bg-[#FFFFFF0D] px-4 py-3 text-left text-base text-[#F66F7D] transition "
+                      className="w-full flex items-center justify-between bg-[#FFFFFF] !rounded-[4px] dark:bg-[#FFFFFF0D] px-4 py-3 text-left text-base text-[#F66F7D] transition "
                     >
                       <span>{collection.name}</span>
                       <Lock className="h-4 w-4 text-[#F66F7D]" />
@@ -141,32 +143,36 @@ export default function StoriesPage() {
           <main className="min-w-0">
             <div className="mx-auto max-w-2xl">
               {/* Sticky Tabs */}
-              <div className="sticky top-0 z-10 bg-[color:var(--page-bg)] pt-4 pb-2 shadow-sm">
+              <div className="sticky top-0 z-10">
                 <Tabs
                   value={activeTab}
                   onValueChange={(value) => {
-                    if (value === "all" || value === "free" || value === "locked") {
+                    if (
+                      value === "all" ||
+                      value === "free" ||
+                      value === "locked"
+                    ) {
                       setActiveTab(value);
                     }
                   }}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-3 rounded-[8px] border border-[color:var(--border)] bg-[color:var(--surface)]">
+                  <TabsList className="grid w-full grid-cols-3 rounded-[8px] bg-[#FFFFFF] dark:bg-[#FFFFFF0D]">
                     <TabsTrigger
                       value="all"
-                      className="rounded-[8px] text-xs font-medium text-[color:var(--text-secondary)] data-[state=active]:bg-[color:var(--accent)] data-[state=active]:text-white md:text-sm"
+                      className="rounded-[8px] text-xs font-medium leading-[120%] text-[#121212] data-[state=active]:bg-[#FCD2D7] data-[state=active]:text-black md:text-sm"
                     >
                       All Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="free"
-                      className="rounded-[8px] h-[48px] text-xs font-medium text-[color:var(--text-secondary)] data-[state=active]:bg-[color:var(--accent)] data-[state=active]:text-white md:text-sm"
+                      className="rounded-[8px] h-[48px] text-xs font-medium text-[#121212] data-[state=active]:bg-[#FCD2D7] data-[state=active]:text-black md:text-sm"
                     >
                       Free Content
                     </TabsTrigger>
                     <TabsTrigger
                       value="locked"
-                      className="rounded-[8px] text-xs font-medium text-[color:var(--text-secondary)] data-[state=active]:bg-[color:var(--accent)] data-[state=active]:text-white md:text-sm"
+                      className="rounded-[8px] text-xs font-medium text-[#121212] data-[state=active]:bg-[#FCD2D7] data-[state=active]:text-black md:text-sm"
                     >
                       Locked Content
                     </TabsTrigger>
@@ -198,8 +204,8 @@ export default function StoriesPage() {
                       {activeTab === "all"
                         ? "No stories in this category"
                         : activeTab === "free"
-                        ? "No free stories available"
-                        : "No locked stories available"}
+                          ? "No free stories available"
+                          : "No locked stories available"}
                     </p>
                   </div>
                 )}
