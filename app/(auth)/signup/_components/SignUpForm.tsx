@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Role = "Author" | "Reader" | null;
 type Step = 1 | 2 | 3;
 
 const inputClass =
-  "w-full h-[50px] px-4 text-base text-[#2C2C2C] bg-white border border-[#7D7D7D] rounded-[4px] outline-none placeholder:text-[#ADADAD] focus:border-[#F66F7D] focus:ring-1 focus:ring-[#F66F7D] transition-colors";
+  "w-full h-[50px] px-4 text-base bg-transparent text-[#2C2C2C] border border-[#7D7D7D] rounded-[4px] outline-none placeholder:text-[#ADADAD] focus:border-[#F66F7D] focus:ring-1 focus:ring-[#F66F7D] transition-colors";
 
 // ✅ moved outside (IMPORTANT FIX)
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -19,20 +20,24 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 
 const Logo = () => (
   <div className="flex flex-col items-center mb-8">
-    <Image
-      src="/logo.png"
-      alt="Logo"
-      width={246}
-      height={165}
-      className="w-[246px] h-[165px]"
-    />
+    <Link href="/" className="">
+      <div className="flex justify-center mb-7">
+        <Image
+          src="/logo.png"
+          alt="Logo"
+          width={246}
+          height={165}
+          className="w-[246px] h-[165px]"
+        />
+      </div>
+    </Link>
   </div>
 );
 
 const SignInLink = () => (
   <p className="text-center text-black text-sm mt-5">
     Already have an account?{" "}
-    <a href="/login" className="text-[#F66F7D] hover:underline font-medium">
+    <a href="/signin" className="text-[#F66F7D] hover:underline font-medium">
       Sign In
     </a>
   </p>
@@ -227,7 +232,7 @@ export default function SignUpForm() {
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             rows={4}
-            className="w-full px-4 py-3 text-base text-[#2C2C2C] bg-white border border-[#7D7D7D] rounded-[4px] outline-none placeholder:text-[#ADADAD] focus:border-[#F66F7D] focus:ring-1 focus:ring-[#F66F7D] transition-colors resize-none"
+            className="w-full px-4 py-3 text-base text-[#2C2C2C] bg-transparent border border-[#7D7D7D] rounded-[4px] outline-none placeholder:text-[#ADADAD] focus:border-[#F66F7D] focus:ring-1 focus:ring-[#F66F7D] transition-colors resize-none"
           />
         </div>
       </div>
