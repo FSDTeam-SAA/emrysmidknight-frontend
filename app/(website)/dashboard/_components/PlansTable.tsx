@@ -1,7 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -11,7 +17,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Pencil, Trash2 } from 'lucide-react';
-import { CreateSubscriptionModal, SubscriptionData } from './CreateSubscriptionModal';
+import {
+  CreateSubscriptionModal,
+  EditSubscriptionModal,
+  SubscriptionData,
+} from './CreateSubscriptionModal';
 
 interface Plan {
   id: string;
@@ -59,15 +69,31 @@ const initialPlans: Plan[] = [
 ];
 
 export function PlansTable() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [plans, setPlans] = useState(initialPlans);
+  const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
+
+  const editingPlan = useMemo(
+    () => plans.find((plan) => plan.id === editingPlanId) ?? null,
+    [plans, editingPlanId]
+  );
+
+  const deletingPlan = useMemo(
+    () => plans.find((plan) => plan.id === deletingPlanId) ?? null,
+    [plans, deletingPlanId]
+  );
 
   const handleEdit = (id: string) => {
-    console.log('Edit plan:', id);
+    setEditingPlanId(id);
+    setIsEditModalOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    console.log('Delete plan:', id);
+    setDeletingPlanId(id);
+    setIsDeleteModalOpen(true);
   };
 
   const handleCreatePlan = (data: SubscriptionData) => {
@@ -79,6 +105,26 @@ export function PlansTable() {
     };
     setPlans([...plans, newPlan]);
     console.log('New plan created:', newPlan);
+  };
+
+  const handleUpdatePlan = (data: SubscriptionData) => {
+    if (!editingPlan) return;
+    const updatedPlan: Plan = {
+      ...editingPlan,
+      name: data.planName,
+      reader: data.contentAccess,
+      amount: Number(data.price),
+    };
+    setPlans((prev) => prev.map((plan) => (plan.id === editingPlan.id ? updatedPlan : plan)));
+    setIsEditModalOpen(false);
+    setEditingPlanId(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingPlan) return;
+    setPlans((prev) => prev.filter((plan) => plan.id !== deletingPlan.id));
+    setIsDeleteModalOpen(false);
+    setDeletingPlanId(null);
   };
 
   return (
@@ -149,7 +195,7 @@ export function PlansTable() {
         <div className="mt-6 sm:mt-8">
           <Button
             className="bg-[#F66F7D] hover:bg-[#F66F7D]/80 text-white font-semibold px-6 h-[48px] sm:px-8 rounded-[8px] transition-colors text-sm sm:text-base"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsCreateModalOpen(true)}
           >
             Add New Plan
           </Button>
@@ -157,10 +203,72 @@ export function PlansTable() {
 
         {/* Create Subscription Modal */}
         <CreateSubscriptionModal
-          open={isModalOpen}
-          onOpenChange={setIsModalOpen}
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
           onSubmit={handleCreatePlan}
         />
+
+        {/* Edit Subscription Modal */}
+        <EditSubscriptionModal
+          open={isEditModalOpen}
+          onOpenChange={(open) => {
+            setIsEditModalOpen(open);
+            if (!open) setEditingPlanId(null);
+          }}
+          onSubmit={handleUpdatePlan}
+          initialData={
+            editingPlan
+              ? {
+                  planName: editingPlan.name,
+                  price: String(editingPlan.amount),
+                  contentAccess: editingPlan.reader,
+                }
+              : undefined
+          }
+        />
+
+        {/* Delete Confirmation Modal */}
+        <Dialog
+          open={isDeleteModalOpen}
+          onOpenChange={(open) => {
+            setIsDeleteModalOpen(open);
+            if (!open) setDeletingPlanId(null);
+          }}
+        >
+          <DialogContent className="w-full max-w-sm rounded-lg bg-[#FFFFFF] p-4 text-[#121212] shadow-lg ring-0 dark:bg-[#2A2A2A] dark:text-white sm:p-6">
+            <DialogHeader className="space-y-2">
+              <DialogTitle className="text-lg font-semibold text-[#121212] dark:text-white">
+                Delete Plan
+              </DialogTitle>
+              <p className="text-sm text-[#6B6B6B] dark:text-[#B3B3B3]">
+                Are you sure you want to delete{' '}
+                <span className="font-semibold text-[#121212] dark:text-white">
+                  {deletingPlan?.name ?? 'this plan'}
+                </span>
+                ? This action cannot be undone.
+              </p>
+            </DialogHeader>
+
+            <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button
+                variant="outline"
+                className="h-10 rounded-[8px]"
+                onClick={() => {
+                  setIsDeleteModalOpen(false);
+                  setDeletingPlanId(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmDelete}
+                className="h-10 rounded-[8px] bg-[#E25757] text-white hover:bg-[#D94C4C]"
+              >
+                Delete
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

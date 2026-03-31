@@ -20,12 +20,14 @@ export default function RootLayout({
   const isAuthorProfilePage = pathname.startsWith("/author-profile"); 
   const isNotificationPage = pathname.startsWith("/notification"); 
   const isDashboardPage = pathname.startsWith("/dashboard"); 
+  const isCreatePostPage = pathname.startsWith("/create-post"); 
+  
 
 
 
   // Pages where main content is full-width
   const isFullWidthPage =
-    isSettingsPage || isFollowingPage || isProfilePage || isAuthorProfilePage || isNotificationPage || isDashboardPage; 
+    isSettingsPage || isFollowingPage || isProfilePage || isAuthorProfilePage || isNotificationPage || isDashboardPage || isCreatePostPage; 
 
   return (
     <ThemeProvider>

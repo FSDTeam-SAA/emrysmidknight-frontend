@@ -1,4 +1,5 @@
 'use client'
+
 import { Button } from '@/components/ui/button'
 import {
   AreaChart,
@@ -43,14 +44,16 @@ const chartData = [
   { date: '30', value: 68 },
 ]
 
-//eslint-disable-next-line
+// eslint-disable-next-line
 const CustomTooltip = (props: any) => {
   const { active, payload } = props
-  
+
   if (active && payload && payload.length) {
     return (
       <div className="bg-neutral-700 border border-neutral-600 rounded px-3 py-2 shadow-lg">
-        <p className="text-neutral-200 text-xs font-medium">{payload[0].payload.date} March</p>
+        <p className="text-neutral-200 text-xs font-medium">
+          {payload[0].payload.date} March
+        </p>
         <p className="text-rose-400 text-sm font-bold">${payload[0].value}</p>
       </div>
     )
@@ -60,56 +63,62 @@ const CustomTooltip = (props: any) => {
 
 export function EarningsChart() {
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D] p-6 md:p-4 lg:p-6 rounded-[8px] [--chart-axis-text:#121212] dark:[--chart-axis-text:#FFFFFF]">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <h2 className=" text-[#121212] dark:text-[#FFFFFF] text-xl md:text-2xl font-medium">Total Earnings</h2>
-        <Button className="bg-[#F66F7D] hover:bg-rose-600 text-white px-4 h-[48px] rounded text-base font-medium whitespace-nowrap">
+    <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D] p-3 md:p-4 lg:p-6 rounded-[8px] [--chart-axis-text:#121212] dark:[--chart-axis-text:#FFFFFF]">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 gap-4">
+        <h2 className="text-[#121212] dark:text-[#FFFFFF] text-lg sm:text-xl md:text-2xl font-medium">
+          Total Earnings
+        </h2>
+
+        <Button className="bg-[#F66F7D] hover:bg-rose-600 text-white px-4 h-[44px] md:h-[48px] rounded text-sm sm:text-base font-medium whitespace-nowrap w-full sm:w-auto">
           This Month
         </Button>
       </div>
 
-      <div className="w-full h-72 md:h-96 lg:h-[420px]">
+      <div className="w-full h-64 sm:h-72 md:h-96 lg:h-[420px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 10, right: 20, left: -20, bottom: 10 }}>
+          <AreaChart
+            data={chartData}
+            margin={{ top: 10, right: 20, left: 0, bottom: 10 }}
+          >
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#991b1b" stopOpacity={0.4} />
                 <stop offset="95%" stopColor="#7f1d1d" stopOpacity={0.05} />
               </linearGradient>
             </defs>
-            
-            <CartesianGrid 
-              strokeDasharray="0" 
-              stroke="#3f3f3f" 
+
+            <CartesianGrid
+              strokeDasharray="0"
+              stroke="#3f3f3f"
               vertical={false}
             />
-            
-            <XAxis 
-              dataKey="date" 
+
+            <XAxis
+              dataKey="date"
               stroke="#F66F7D"
               tick={{ fill: 'var(--chart-axis-text)', fontSize: 12 }}
               axisLine={{ stroke: '#404040' }}
               tickLine={false}
+              minTickGap={18}
+              interval="preserveStartEnd"
             />
-            
-            <YAxis 
+
+            <YAxis
               stroke="#F66F7D"
               tick={{ fill: 'var(--chart-axis-text)', fontSize: 12 }}
               axisLine={{ stroke: '#404040' }}
               tickLine={false}
               domain={[0, 100]}
               ticks={[0, 20, 40, 60, 80, 100]}
+              width={40}
             />
-            
-            {/* Reference line at the 22 March highlight */}
-        
-            
+
             <Tooltip content={<CustomTooltip />} />
-            
-            <Area 
-              type="monotone" 
-              dataKey="value" 
-              stroke="#F66F7D" 
+
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="#F66F7D"
               strokeWidth={2.5}
               dot={false}
               fill="url(#colorValue)"

@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen ">
-      <div className="p-6 md:p-8 lg:p-0">
+      <div className="p-0 md:p-8 lg:p-0">
         {/* Stat Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           {stats.map((stat, index) => (
