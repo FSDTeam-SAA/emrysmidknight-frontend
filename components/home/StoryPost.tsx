@@ -5,12 +5,12 @@ import {
   Bookmark,
   MoreHorizontal,
   ThumbsUp,
-  Lock,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
+import { UnlockDialog } from "../Dialog/UnlockDialog";
 
 interface StoryPostProps {
   author: string;
@@ -46,7 +46,7 @@ export function StoryPost({
   bookmarkColor = "#F66F7D",
 }: StoryPostProps) {
   const [expanded, setExpanded] = useState(false);
-  const [isLocked, setIsLocked] = useState(locked);
+  const [isLocked] = useState(locked);
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
 
   const isLong = content.length > MAX_CHARS;
@@ -163,13 +163,14 @@ export function StoryPost({
       {/* ── Unlock overlay (on top, not blurred) ── */}
       {isLocked && (
         <div className="absolute bottom-24 left-6 z-10">
-          <button
+          {/* <button
             onClick={() => setIsLocked(false)}
             className="flex items-center gap-2 rounded-lg bg-[#f26d7d] px-5 py-2.5 text-sm font-semibold text-white shadow-xl transition-all duration-200 hover:bg-[#e85d6b] active:scale-95"
           >
             <Lock size={15} />
             Unlock
-          </button>
+          </button> */}
+          <UnlockDialog />
         </div>
       )}
     </div>
