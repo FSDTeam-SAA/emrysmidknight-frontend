@@ -87,7 +87,7 @@ export default function ProfileHeader() {
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center justify-center w-[48px] h-[48px] rounded-[10px] border border-white/10 bg-[#5E5E5E] text-[#FFFFFF] cursor-pointer hover:bg-white/[0.07] hover:text-[#FFFFFF] transition-all duration-150"
+                className="flex items-center justify-center w-[48px] h-[48px] rounded-[10px] border border-white/10 bg-[#F2F2F2] text-[#121212] cursor-pointer transition-all duration-150"
               >
                 <MoreIcon />
               </button>
