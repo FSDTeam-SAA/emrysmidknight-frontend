@@ -4,12 +4,80 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ChangePasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email") || "";
+  // const resetToken = searchParams.get("token") || "";
+
+  // Validation function
+  // const validateForm = () => {
+  //   if (!newPassword || !confirmPassword) {
+  //     toast.error("Both fields are required");
+  //     return false;
+  //   }
+  //   if (newPassword.length < 6) {
+  //     toast.error("Password must be at least 6 characters");
+  //     return false;
+  //   }
+  //   if (newPassword !== confirmPassword) {
+  //     toast.error("Passwords do not match");
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
+  // Reset Password Mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: async () => {
+      const bodyData = {
+        email, 
+        newPassword,
+      };
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/reset-password`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        },
+      );
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.message || "Password reset failed");
+      }
+
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Password reset successful");
+      router.push("/signin");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to reset password");
+    },
+  });
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+    resetPasswordMutation.mutate(undefined, {
+      onSettled: () => setIsLoading(false)
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FEF1F2]">
@@ -39,7 +107,7 @@ export default function ChangePasswordForm() {
 
         {/* New Password */}
         <div className="mb-[14px]">
-          <label className="block text-sm text-[#2C2C2C] font- medium mb-1.5">
+          <label className="block text-sm text-[#2C2C2C] font-medium mb-1.5">
             New Password
           </label>
           <div className="relative">
@@ -62,7 +130,7 @@ export default function ChangePasswordForm() {
 
         {/* Confirm Password */}
         <div className="mb-6">
-          <label className="block text-sm text-[#2C2C2C] font- medium mb-1.5">
+          <label className="block text-sm text-[#2C2C2C] font-medium mb-1.5">
             Confirm Password
           </label>
           <div className="relative">
@@ -84,16 +152,20 @@ export default function ChangePasswordForm() {
         </div>
 
         {/* Button */}
-        <button className="w-full h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-[6px] cursor-pointer">
-          Change Password
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading}
+          className="w-full h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-[6px] cursor-pointer disabled:opacity-50"
+        >
+          {isLoading ? "Changing..." : "Change Password"}
         </button>
 
         {/* Back */}
         <p className="text-center text-black text-[13px] mt-4">
           Already have an account?{" "}
-          <a href="/signin" className="text-[#F66F7D] font-semibold">
+          <Link href="/signin" className="text-[#F66F7D] font-semibold">
             Sign In
-          </a>
+          </Link>
         </p>
       </div>
     </div>

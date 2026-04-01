@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ChangePasswordForm from './_components/ChangePasswordForm'
 
 function page() {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <ChangePasswordForm />
-    </div>
+    </Suspense>
   )
 }
 
