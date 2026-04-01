@@ -4,6 +4,9 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Role = "Author" | "Reader" | null;
 type Step = 1 | 2 | 3;
@@ -64,6 +67,50 @@ export default function SignUpForm() {
   const [pronouns, setPronouns] = useState("");
   const [bio, setBio] = useState("");
 
+  const router = useRouter();
+
+  const signupMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            role,
+            email,
+            password,
+            fullName,
+            userName,
+            pronounce: pronouns,
+            bio,
+          }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Signup failed");
+      }
+
+      return data;
+    },
+
+    onSuccess: (data) => {
+      console.log("✅ Signup success:", data);
+      toast.success("Account created successfully!");
+      router.push("/signin");
+    },
+
+    onError: (error) => {
+      console.error("❌ Signup error:", error.message);
+      toast.error(error.message);
+    },
+  });
+
   // STEP 1
   if (step === 1) {
     return (
@@ -71,7 +118,7 @@ export default function SignUpForm() {
         <p className="text-[#F66F7D] text-base mb-5">I am a...</p>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
-          {(["Author", "Reader"] as Role[]).map((r) => (
+          {(["author", "reader"] as unknown as Role[]).map((r) => (
             <button
               key={r!}
               onClick={() => setRole(r)}
@@ -81,7 +128,7 @@ export default function SignUpForm() {
                   : "text-[#F66F7D] border-[#F66F7D]"
               }`}
             >
-              {r}
+              {r?.toUpperCase() || r}
             </button>
           ))}
         </div>
@@ -238,10 +285,10 @@ export default function SignUpForm() {
       </div>
 
       <button
-        onClick={() => alert("Account created successfully!")}
+        onClick={() => signupMutation.mutate()}
         className="w-full mt-6 bg-[#F66F7D] hover:bg-[#d45570] text-white rounded-md h-[50px] text-base font-medium transition-colors"
       >
-        Create Account
+        {signupMutation.isPending ? "Creating..." : "Create Account"}
       </button>
 
       <SignInLink />
