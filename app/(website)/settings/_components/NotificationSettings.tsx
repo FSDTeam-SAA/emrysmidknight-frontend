@@ -23,7 +23,7 @@ export default function NotificationSettings<K extends string>({
           key={item.key}
           className={`flex justify-between items-center px-6 py-[20px] bg-white dark:bg-white/5 rounded-[8px]  `}
         >
-          <span className="text-xl text-[#2C2C2C] dark:text-white">
+          <span className="text-base md:text-xl text-[#2C2C2C] dark:text-white">
             {item.label}
           </span>
 

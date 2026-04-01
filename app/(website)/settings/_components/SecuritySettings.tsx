@@ -29,34 +29,34 @@ export default function SecuritySettings({
   return (
     <div className="flex flex-col gap-4">
       {/* ─── Change Password ─── */}
-      <div className="bg-white dark:bg-white/5 rounded-xl p-6">
-        <h2 className="text-[32px] font-medium text-[#121212] dark:text-white mb-5">
+      <div className="rounded-xl bg-white p-4 dark:bg-white/5 sm:p-6">
+        <h2 className="mb-5 text-2xl font-medium text-[#121212] dark:text-white lg:text-[32px]">
           Change Password
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <PasswordInput label="Current Password" />
           <PasswordInput label="New Password" />
         </div>
 
-        <div className="w-1/2 mb-6">
+        <div className="mb-6 w-full md:w-1/2">
           <PasswordInput label="Confirm New Password" />
         </div>
 
-        <div className="flex justify-end gap-3">
-          <button className="px-5 h-[48px] text-base font-medium text-[#F66F7D] border border-[#F66F7D] rounded-md bg-transparent hover:bg-[#F66F7D] hover:text-white transition-colors">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button className="h-[48px] rounded-md border border-[#F66F7D] bg-transparent px-5 text-sm font-medium text-[#F66F7D] transition-colors hover:bg-[#F66F7D] hover:text-white sm:text-base">
             Discard Changes
           </button>
 
-          <button className="px-5 h-[48px] text-base font-medium text-white bg-[#F66F7D] rounded-md hover:opacity-90 transition">
+          <button className="h-[48px] rounded-md bg-[#F66F7D] px-5 text-sm font-medium text-white transition hover:opacity-90 sm:text-base">
             Save Changes
           </button>
         </div>
       </div>
 
       {/* ─── Login Devices ─── */}
-      <div className="bg-white dark:bg-white/5 rounded-xl p-6">
-        <h2 className="text-[32px] font-medium text-[#121212] dark:text-white mb-5">
+      <div className="rounded-xl bg-white p-4 dark:bg-white/5 sm:p-6">
+        <h2 className="mb-5 text-2xl font-medium text-[#121212] dark:text-white lg:text-[32px]">
           Login Devices
         </h2>
 
@@ -64,23 +64,23 @@ export default function SecuritySettings({
           {devices.map((device, index) => (
             <div
               key={device.id}
-              className={`flex justify-between items-center py-4 ${
+              className={`flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between ${
                 index < devices.length - 1
                   ? "border-b border-gray-200 dark:border-white/10"
                   : ""
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-start gap-3">
                 <Monitor
                   size={20}
-                  className="text-gray-500 dark:text-gray-300"
+                  className="mt-1 shrink-0 text-gray-500 dark:text-gray-300"
                 />
 
-                <div>
-                  <p className="text-[16px] text-[#2C2C2C] dark:text-white">
+                <div className="min-w-0">
+                  <p className="break-words text-[15px] text-[#2C2C2C] dark:text-white sm:text-[16px]">
                     {device.browser} – {device.os} – {device.location}
                   </p>
-                  <p className="text-[14px] text-[#5E5E5E] dark:text-gray-400">
+                  <p className="text-[13px] text-[#5E5E5E] dark:text-gray-400 sm:text-[14px]">
                     Last Active: {device.lastActive}
                   </p>
                 </div>
@@ -88,7 +88,7 @@ export default function SecuritySettings({
 
               <button
                 onClick={() => onLogoutDevice(device.id)}
-                className="px-4 py-2 text-[14px] font-medium text-[#F66F7D] border border-[#F66F7D] rounded-md bg-transparent hover:bg-[#F66F7D] hover:text-white transition-colors"
+                className="w-full rounded-md border border-[#F66F7D] bg-transparent px-4 py-2 text-[14px] font-medium text-[#F66F7D] transition-colors hover:bg-[#F66F7D] hover:text-white sm:w-auto"
               >
                 Log Out
               </button>
@@ -96,7 +96,7 @@ export default function SecuritySettings({
           ))}
 
           {devices.length === 0 && (
-            <p className="text-[14px] text-[#5E5E5E] dark:text-gray-400 text-center py-4">
+            <p className="py-4 text-center text-[14px] text-[#5E5E5E] dark:text-gray-400">
               No active devices.
             </p>
           )}
@@ -105,7 +105,7 @@ export default function SecuritySettings({
         <div className="mt-5">
           <button
             onClick={onLogoutAll}
-            className="px-5 py-2 text-base font-medium text-white bg-[#F66F7D] rounded-md hover:opacity-90 transition"
+            className="w-full rounded-md bg-[#F66F7D] px-5 py-3 text-sm font-medium text-white transition hover:opacity-90 sm:w-auto sm:py-2 sm:text-base"
           >
             Log Out All Devices
           </button>
@@ -113,17 +113,19 @@ export default function SecuritySettings({
       </div>
 
       {/* ─── Login Alerts ─── */}
-      <div className="bg-white dark:bg-white/5 rounded-xl px-6 py-[18px] flex justify-between items-center">
-        <div>
-          <p className="text-xl font-medium text-[#2C2C2C] dark:text-white">
+      <div className="flex flex-col gap-4 rounded-xl bg-white px-4 py-4 dark:bg-white/5 sm:px-6 sm:py-[18px] md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <p className="text-lg font-medium text-[#2C2C2C] dark:text-white lg:text-xl">
             Login Alerts
           </p>
-          <p className="text-[16px] text-[#5E5E5E] dark:text-gray-300">
+          <p className="text-sm text-[#5E5E5E] dark:text-gray-300 sm:text-[16px]">
             Get notified when a new device logs into your account.
           </p>
         </div>
 
-        <Toggle checked={loginAlerts} onChange={onToggleLoginAlerts} />
+        <div className="shrink-0">
+          <Toggle checked={loginAlerts} onChange={onToggleLoginAlerts} />
+        </div>
       </div>
     </div>
   );

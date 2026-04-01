@@ -6,7 +6,10 @@ type PreferencesProps = {
   onChangeTheme: (value: ThemeMode) => void;
 };
 
-export default function Preferences({ theme, onChangeTheme }: PreferencesProps) {
+export default function Preferences({
+  theme,
+  onChangeTheme,
+}: PreferencesProps) {
   const handleChange = (value: string) => {
     if (value === "light" || value === "dark") {
       onChangeTheme(value);
@@ -15,9 +18,8 @@ export default function Preferences({ theme, onChangeTheme }: PreferencesProps) 
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="bg-white dark:bg-white/5 shadow-md rounded-xl px-6 py-5 transition">
-        
-        <p className="text-xl font-medium text-[color:var(--text-primary)] mb-4">
+      <div className="rounded-xl bg-white px-4 py-4 shadow-md transition dark:bg-white/5 sm:px-6 sm:py-5">
+        <p className="mb-4 text-lg font-medium text-[color:var(--text-primary)] sm:text-xl">
           Theme
         </p>
 

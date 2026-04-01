@@ -23,17 +23,18 @@ export default function AccountSettings({
   return (
     <div className="flex flex-col gap-4">
       {/* Account Info */}
-      <div className="bg-white dark:bg-white/5 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl bg-white dark:bg-white/5">
         {accountRows.map((item) => (
           <div
             key={item.label}
-            className="flex justify-between items-center px-6 py-[18px]"
+            className="flex flex-col gap-2 px-4 py-4 sm:px-6 sm:py-[18px] md:flex-row md:items-center md:justify-between"
           >
-            <span className="text-xl text-[#2C2C2C] dark:text-white">
+            <span className="text-base sm:text-lg lg:text-xl text-[#2C2C2C] dark:text-white">
               {item.label}
             </span>
+
             {item.value && (
-              <span className="text-xl text-[#2C2C2C] dark:text-white">
+              <span className="break-words text-left text-base sm:text-lg lg:text-xl text-[#2C2C2C] dark:text-white md:text-right">
                 {item.value}
               </span>
             )}
@@ -42,47 +43,51 @@ export default function AccountSettings({
       </div>
 
       {/* Public Profile */}
-      <div className="bg-white dark:bg-white/5 rounded-xl px-6 py-[18px] flex justify-between items-center">
-        <div>
-          <p className="text-xl font-medium text-[#2C2C2C] dark:text-white mb-1">
+      <div className="flex flex-col gap-4 rounded-xl bg-white px-4 py-4 dark:bg-white/5 sm:px-6 sm:py-[18px] md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <p className="mb-1 text-lg font-medium text-[#2C2C2C] dark:text-white lg:text-xl">
             Public Profile
           </p>
-          <p className="text-[16px] text-[#5E5E5E] dark:text-gray-300">
+          <p className="text-sm text-[#5E5E5E] dark:text-gray-300 sm:text-[16px]">
             Anyone on the platform can view your profile information and activity.
           </p>
         </div>
-        <Toggle checked={publicProfile} onChange={onTogglePublicProfile} />
+        <div className="shrink-0">
+          <Toggle checked={publicProfile} onChange={onTogglePublicProfile} />
+        </div>
       </div>
 
-      {/* Mature Content (FIXED) */}
-      <div className="bg-white dark:bg-white/5 rounded-xl px-6 py-[18px] flex justify-between items-center">
-        <div>
-          <p className="text-xl font-medium text-[#2C2C2C] dark:text-white mb-1">
+      {/* Mature Content */}
+      <div className="flex flex-col gap-4 rounded-xl bg-white px-4 py-4 dark:bg-white/5 sm:px-6 sm:py-[18px] md:flex-row md:items-center md:justify-between">
+        <div className="flex-1">
+          <p className="mb-1 text-lg font-medium text-[#2C2C2C] dark:text-white lg:text-xl">
             Mature Content
           </p>
-          <p className="text-[16px] text-[#5E5E5E] dark:text-gray-300">
+          <p className="text-sm text-[#5E5E5E] dark:text-gray-300 sm:text-[16px]">
             You must be 18+ to view mature stories or media.
           </p>
         </div>
-        <Toggle checked={matureContent} onChange={onToggleMatureContent} />
+        <div className="shrink-0">
+          <Toggle checked={matureContent} onChange={onToggleMatureContent} />
+        </div>
       </div>
 
-      {/* Deactivate Account (FIXED) */}
-      <div className="bg-white dark:bg-white/5 rounded-xl px-6 py-[18px]  cursor-pointer hover:border-gray-400 dark:hover:border-white/30 transition-colors">
-        <p className="text-xl font-medium text-[#EE0000] mb-1">
+      {/* Deactivate Account */}
+      <div className="cursor-pointer rounded-xl bg-white px-4 py-4 transition-colors hover:border-gray-400 dark:bg-white/5 dark:hover:border-white/30 sm:px-6 sm:py-[18px]">
+        <p className="mb-1 text-lg font-medium text-[#EE0000] lg:text-xl">
           Deactivate account
         </p>
-        <p className="text-[16px] text-[#5E5E5E] dark:text-gray-300">
+        <p className="text-sm text-[#5E5E5E] dark:text-gray-300 sm:text-[16px]">
           Deactivating will suspend your account until you sign back in.
         </p>
       </div>
 
-      {/* Delete Account (FIXED) */}
-      <div className="bg-white dark:bg-white/5 rounded-xl px-6 py-[18px] cursor-pointer hover:border-[#EE0000] transition-colors">
-        <p className="text-xl font-medium text-[#EE0000] mb-1">
+      {/* Delete Account */}
+      <div className="cursor-pointer rounded-xl bg-white px-4 py-4 transition-colors hover:border-[#EE0000] dark:bg-white/5 sm:px-6 sm:py-[18px]">
+        <p className="mb-1 text-lg font-medium text-[#EE0000] lg:text-xl">
           Delete account
         </p>
-        <p className="text-[16px] text-[#5E5E5E] dark:text-gray-300">
+        <p className="text-sm text-[#5E5E5E] dark:text-gray-300 sm:text-[16px]">
           Permanently delete your account and all of your content.
         </p>
       </div>

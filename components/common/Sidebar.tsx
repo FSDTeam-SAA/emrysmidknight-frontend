@@ -4,7 +4,7 @@ import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard } from 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
-const navigationItems = [
+export const navigationItems = [
   { name: 'Home', icon: Home, href: '/', color: '' },
   { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
   { name: 'Explore', icon: Compass, href: '/explore' },

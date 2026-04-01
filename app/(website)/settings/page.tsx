@@ -9,7 +9,13 @@ import SecuritySettings from "./_components/SecuritySettings";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { PaymentMethods } from "./_components/PaymentMethods";
 
-const tabs = ["Account Settings", "Notification Settings", "Security Settings", "Preferences", "Payment Methods"];
+const tabs = [
+  "Account Settings",
+  "Notification Settings",
+  "Security Settings",
+  "Payment Methods",
+  "Preferences",
+];
 
 /* ─── Main Page ───────────────────────────────────────────── */
 export default function SettingsPage() {
@@ -31,6 +37,7 @@ export default function SettingsPage() {
     paymentFailedAlert: true,
     emailNotifications: false,
   });
+
   const toggleNotification = (key: keyof typeof notifications) =>
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
 
@@ -40,7 +47,9 @@ export default function SettingsPage() {
     { id: 1, browser: "Chrome", os: "Windows", location: "Mar del Plata", lastActive: "2 hours ago" },
     { id: 2, browser: "Chrome", os: "Windows", location: "Mannheim", lastActive: "2 hours ago" },
   ]);
-  const logoutDevice = (id: number) => setDevices((prev) => prev.filter((d) => d.id !== id));
+
+  const logoutDevice = (id: number) =>
+    setDevices((prev) => prev.filter((d) => d.id !== id));
 
   /* Static data */
   const accountRows = [
@@ -62,27 +71,35 @@ export default function SettingsPage() {
   ] as const;
 
   return (
-    <div className="min-h-screen text-[color:var(--page-text)] font-sans px-6 py-10">
+    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 sm:px-6 py-6 sm:py-8 lg:py-10">
       <div className="container mx-auto">
-
         {/* Title */}
-        <h1 className="text-3xl lg:text-[40px] font-semibold text-[color:var(--page-text)] mb-7">Settings</h1>
+        <h1 className="mb-5 text-2xl font-semibold text-[color:var(--page-text)] sm:text-3xl lg:mb-7 lg:text-[40px]">
+          Settings
+        </h1>
 
         {/* Tabs */}
-        <div className="flex border-b border-[color:var(--border)] mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-5 py-3 text-base font-medium whitespace-nowrap border-b-2 bg-transparent cursor-pointer transition-colors duration-200 -mb-px ${
-                activeTab === tab
-                  ? "text-[color:var(--text-primary)]  border-[#F66F7D]"
-                  : "text-[color:var(--text-secondary)] border-transparent hover:text-[color:var(--text-primary)]"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="relative mb-6 border-b border-[color:var(--border)]">
+          <div className="no-scrollbar -mx-2 overflow-x-auto px-2">
+            <div className="flex min-w-max">
+              {tabs.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-4 sm:px-5 py-3 text-sm sm:text-base font-medium whitespace-nowrap border-b-2 bg-transparent cursor-pointer transition-colors duration-200 -mb-px ${
+                    activeTab === tab
+                      ? "text-[color:var(--text-primary)] border-[#F66F7D]"
+                      : "text-[color:var(--text-secondary)] border-transparent hover:text-[color:var(--text-primary)]"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right fade indicator for mobile */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-[var(--background)] to-transparent sm:hidden" />
         </div>
 
         {/* ── ACCOUNT SETTINGS ── */}
@@ -115,17 +132,14 @@ export default function SettingsPage() {
             onToggleLoginAlerts={() => setLoginAlerts((prev) => !prev)}
           />
         )}
-        {
-          activeTab === "Payment Methods" && (
-            <PaymentMethods />
-          )
-        }
+
+        {/* ── PAYMENT METHODS ── */}
+        {activeTab === "Payment Methods" && <PaymentMethods />}
 
         {/* ── PREFERENCES ── */}
         {activeTab === "Preferences" && (
           <Preferences theme={theme} onChangeTheme={setTheme} />
         )}
-
       </div>
     </div>
   );
