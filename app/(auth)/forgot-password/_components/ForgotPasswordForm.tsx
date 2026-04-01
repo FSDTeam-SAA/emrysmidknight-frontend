@@ -3,9 +3,45 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
+  const router = useRouter();
+
+  const forgotPassMutation = useMutation({
+    mutationFn: async (bodyData: { email: string }) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/auth/forgot-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(bodyData),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send email");
+      }
+
+      return data;
+    },
+
+    onSuccess: (data) => {
+      toast.success(data.message);
+      // encode email for URL
+      const encodedEmail = encodeURIComponent(email);
+      router.push(`/verify-email?email=${encodedEmail}`);
+    },
+
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FEF1F2]">
@@ -46,8 +82,11 @@ export default function ForgotPasswordForm() {
         </div>
 
         {/* Button */}
-        <button className="w-full h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-[6px] cursor-pointer">
-          Send OTP
+        <button
+          onClick={() => forgotPassMutation.mutate({ email })}
+          className="w-full h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-[6px] cursor-pointer"
+        >
+          {forgotPassMutation.isPending ? "Sending OTP..." : "Send OTP"}
         </button>
 
         {/* Back to Login */}
