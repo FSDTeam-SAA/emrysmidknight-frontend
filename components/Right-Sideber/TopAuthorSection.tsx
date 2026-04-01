@@ -51,7 +51,7 @@ export function TopAuthorSection() {
 
       <div className="space-y-4">
         {authors.map((author) => (
-          <Link key={author.id} href={`/author-profile/${author.id}`}>
+          <Link key={author.id} href={`/author-profile/${author.id}`} className="block">
             <div
               className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border border-[#D7D7D7] dark:border-[#2C2C2C] rounded-[8px]"
             >
