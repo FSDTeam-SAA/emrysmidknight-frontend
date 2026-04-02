@@ -82,10 +82,7 @@ function AccountInfoSkeleton() {
 }
 
 export default function AccountSettings({
-  publicProfile: _publicProfile,
-  onTogglePublicProfile: _onTogglePublicProfile,
-  matureContent: _matureContent,
-  onToggleMatureContent: _onToggleMatureContent,
+ 
 }: AccountSettingsProps) {
   const { data: session, status } = useSession();
   const token = session?.user?.accessToken;

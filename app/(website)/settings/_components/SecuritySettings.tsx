@@ -281,7 +281,7 @@ export default function SecuritySettings({
         toast.error(data.message || "Failed to change password");
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again." + error);
   } finally {
       setIsChangingPassword(false);
     }

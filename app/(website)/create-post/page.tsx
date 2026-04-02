@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   useEffect,
+  useCallback,
   type CSSProperties,
   type Dispatch,
   type SetStateAction,
@@ -13,6 +14,7 @@ import {
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import "react-quill/dist/quill.snow.css";
+import Image from "next/image";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -108,9 +110,9 @@ export default function ResponsivePostEditorClone() {
     }));
   };
 
-  const revokeMediaItems = (items: MediaItem[]) => {
+  const revokeMediaItems = useCallback((items: MediaItem[]) => {
     items.forEach((item) => URL.revokeObjectURL(item.url));
-  };
+  }, []);
 
   const handleFileSelect = (
     files: FileList | null,
@@ -139,7 +141,7 @@ export default function ResponsivePostEditorClone() {
       revokeMediaItems(audiosRef.current);
       revokeMediaItems(attachmentsRef.current);
     };
-  }, []);
+  }, [revokeMediaItems]);
 
   const handleSubmit = async () => {
     const plainText = getPlainText(body);
@@ -261,9 +263,11 @@ export default function ResponsivePostEditorClone() {
                       key={`${item.file.name}-${item.file.size}-${index}`}
                       className="group relative overflow-hidden rounded-lg border border-black/10 bg-white dark:border-white/10 dark:bg-[#0F0F12]"
                     >
-                      <img
+                      <Image
                         src={item.url}
                         alt={item.file.name}
+                        width={1000}
+                        height={1000}
                         className="h-32 w-full object-cover"
                       />
                       <button
