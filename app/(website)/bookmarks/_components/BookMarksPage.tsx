@@ -76,7 +76,7 @@ export default function BookMarksPage() {
             locked={post.locked}
             // ✅ সব bookmark icon ফিলড রাখার জন্য
             bookmarked={true}
-            bookmarkColor="#F66F7D"
+            // bookmarkColor="#F66F7D"
           />
         ))}
       </div>
