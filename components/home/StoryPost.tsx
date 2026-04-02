@@ -14,6 +14,27 @@ import { UnlockDialog } from "../Dialog/UnlockDialog";
 import { CommentModal } from "../Dialog/CommentModal";
 import { formatDistanceToNow } from "date-fns";
 
+export interface ReplyData {
+  id: string;
+  author: string;
+  avatar: string;
+  handle: string;
+  time: string;
+  text: string;
+  likes: number;
+}
+
+export interface CommentData {
+  id: string;
+  author: string;
+  avatar: string;
+  handle: string;
+  time: string;
+  text: string;
+  likes: number;
+  replies?: ReplyData[];
+}
+
 interface StoryPostProps {
   author: string;
   handle: string;
@@ -23,10 +44,13 @@ interface StoryPostProps {
   content: string;
   likes: number;
   comments: number;
+  commentsData?: CommentData[];
   image?: string;
   video?: string;
   locked?: boolean;
   bookmarked?: boolean;
+  liked?: boolean;   // ✅ server থেকে আসা — user আগে like করেছে কিনা
+  id?: string;
 }
 
 const MAX_CHARS = 220;
@@ -40,10 +64,13 @@ export function StoryPost({
   content,
   likes,
   comments,
+  commentsData = [],
   image,
   video,
   locked,
   bookmarked = false,
+  liked = false,   // ✅
+  id,
 }: StoryPostProps) {
   const [expanded, setExpanded] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
@@ -52,9 +79,6 @@ export function StoryPost({
   const isLong = content.length > MAX_CHARS;
   const displayedContent =
     expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
-  const likeDisplay = `${likes}K`;
-
-  console.log(locked, "LOCKED STATUS"); // 🔒 Debug log for lock status
 
   return (
     <>
@@ -138,15 +162,20 @@ export function StoryPost({
         {/* Footer */}
         <div className="mt-5 flex items-center justify-between border-t border-[#D7D7D7] px-5 py-4 text-[#8c8c8c]">
           <div className="flex items-center gap-4">
-            {/* Likes */}
+            {/* ✅ ThumbsUp — liked থাকলে filled, না থাকলে outline */}
             <div className="flex items-center gap-2">
-              <ThumbsUp className="w-4 h-4" />
+              <ThumbsUp
+                className={`w-4 h-4 transition-all duration-200 ${
+                  liked
+                    ? "fill-[#F66F7D] stroke-[#F66F7D]"
+                    : "fill-none stroke-[#71717a]"
+                }`}
+              />
               <span className="text-sm font-semibold text-[#121212] dark:text-white">
-                {likeDisplay}
+                {likes >= 1000 ? `${Math.floor(likes / 1000)}K` : likes}
               </span>
             </div>
 
-            {/* Comments */}
             <button
               onClick={() => setCommentModalOpen(true)}
               className="flex items-center gap-2 hover:opacity-70 transition-opacity"
@@ -158,7 +187,6 @@ export function StoryPost({
             </button>
           </div>
 
-          {/* Bookmark */}
           <button
             onClick={() => setIsBookmarked(!isBookmarked)}
             className="h-8 w-8 flex items-center justify-center rounded-md transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -188,12 +216,17 @@ export function StoryPost({
         author={author}
         handle={handle}
         avatar={avatar}
+        id={id}
         timestamp={timestamp}
         title={title}
         content={content}
-        totalLikes={likes}
+        liked={liked}         // ✅ সরাসরি prop পাঠানো হচ্ছে
+        totalLikes={likes}    // ✅ likes prop থেকে
         totalComments={comments}
         bookmarked={isBookmarked}
+        commentsData={commentsData}
+        image={image}
+        video={video}
       />
     </>
   );
