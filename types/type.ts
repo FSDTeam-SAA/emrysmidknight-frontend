@@ -3,9 +3,9 @@ export interface Author {
   fullName: string;
   userName: string;
   email: string;
-  role: string;
   bio: string;
-  profileImage?: string;
+  profileImage?: string; // ← this matches API
+  // ...other fields
 }
 
 export interface Blog {
