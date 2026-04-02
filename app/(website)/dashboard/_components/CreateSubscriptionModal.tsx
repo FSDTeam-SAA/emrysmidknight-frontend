@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +11,16 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 
 export interface SubscriptionData {
   planName: string;
   price: string;
   contentAccess: string[];
+  duration: string;
+  features: string[];
+  blogIds: string[];
 }
 
 interface BaseSubscriptionModalProps {
@@ -25,6 +30,7 @@ interface BaseSubscriptionModalProps {
   title: string;
   submitLabel: string;
   initialData?: SubscriptionData;
+  mode: 'create' | 'edit';
 }
 
 interface CreateSubscriptionModalProps {
@@ -40,19 +46,10 @@ interface EditSubscriptionModalProps {
   initialData?: SubscriptionData;
 }
 
-const contentItems = [
-  'The Dark Forest – Chapter 1',
-  'Galactic Wars – Prologue',
-  'Moonlight Diary – Episode 3',
-  'Shadows of the Kingdom – Part 2',
-  'A Summer Tale – Chapter 5',
-  'The Lost Expedition – Chapter 4',
-  'AI Uprising – Episode 1',
-  'The Last Dragon\'s Secret',
-  'Time Loop Protocol',
-  'The Last Signal',
-  'The Beginning of the End',
-];
+interface BlogItem {
+  _id: string;
+  title?: string;
+}
 
 function SubscriptionModalBase({
   open,
@@ -61,42 +58,196 @@ function SubscriptionModalBase({
   title,
   submitLabel,
   initialData,
+  mode,
 }: BaseSubscriptionModalProps) {
+  const { data: session, status } = useSession();
+  const token = session?.user?.accessToken;
   const [planName, setPlanName] = useState('');
   const [price, setPrice] = useState('');
-  const [selectedContent, setSelectedContent] = useState<string[]>([]);
+  const [duration, setDuration] = useState('monthly');
+  const [featureInput, setFeatureInput] = useState('');
+  const [features, setFeatures] = useState<string[]>([]);
+  const [selectedBlogIds, setSelectedBlogIds] = useState<string[]>([]);
+  const [selectedBlogTitles, setSelectedBlogTitles] = useState<string[]>([]);
+  const [blogs, setBlogs] = useState<BlogItem[]>([]);
+  const [isBlogsLoading, setIsBlogsLoading] = useState(false);
+  const [blogsError, setBlogsError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const contentKey = (initialData?.contentAccess ?? []).join('|');
+  const featureKey = (initialData?.features ?? []).join('|');
+  const blogIdKey = (initialData?.blogIds ?? []).join('|');
 
   useEffect(() => {
     if (!open) return;
     setPlanName(initialData?.planName ?? '');
     setPrice(initialData?.price ?? '');
-    setSelectedContent(initialData?.contentAccess ?? []);
-  }, [open, initialData?.planName, initialData?.price, contentKey]);
+    setDuration(initialData?.duration ?? 'monthly');
+    setFeatureInput('');
+    setFeatures(initialData?.features ?? []);
+    setSelectedBlogIds(initialData?.blogIds ?? []);
+    setSelectedBlogTitles(initialData?.contentAccess ?? []);
+  }, [
+    open,
+    initialData?.planName,
+    initialData?.price,
+    initialData?.duration,
+    contentKey,
+    featureKey,
+    blogIdKey,
+  ]);
 
-  const handleToggleContent = (item: string) => {
-    setSelectedContent((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-    );
-  };
-
-  const handleSubmit = () => {
-    if (!planName.trim() || !price.trim()) {
-      alert('Please fill in all required fields');
+  useEffect(() => {
+    if (!open) return;
+    if (!token) {
+      setBlogs([]);
+      setBlogsError('Missing auth token');
       return;
     }
 
-    onSubmit({
-      planName,
-      price,
-      contentAccess: selectedContent,
-    });
+    const controller = new AbortController();
+    setIsBlogsLoading(true);
+    setBlogsError(null);
 
-    // Reset form
-    setPlanName('');
-    setPrice('');
-    setSelectedContent([]);
-    onOpenChange(false);
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/blog/my-blogs`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      signal: controller.signal,
+    })
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(data?.message || 'Failed to load blogs');
+        }
+        const items = Array.isArray(data?.data) ? data.data : [];
+        setBlogs(items);
+      })
+      .catch((error) => {
+        if (error?.name === 'AbortError') return;
+        setBlogs([]);
+        setBlogsError(
+          error instanceof Error ? error.message : 'Failed to load blogs'
+        );
+      })
+      .finally(() => {
+        setIsBlogsLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [open, token]);
+
+  const handleToggleContent = (id: string, title: string) => {
+    const isSelected =
+      selectedBlogIds.includes(id) || selectedBlogTitles.includes(title);
+
+    if (isSelected) {
+      setSelectedBlogIds((prev) => prev.filter((item) => item !== id));
+      setSelectedBlogTitles((prev) => prev.filter((item) => item !== title));
+      return;
+    }
+
+    setSelectedBlogIds((prev) => [...prev, id]);
+    setSelectedBlogTitles((prev) =>
+      prev.includes(title) ? prev : [...prev, title]
+    );
+  };
+
+  const selectedTitles = useMemo(() => selectedBlogTitles, [selectedBlogTitles]);
+
+  const addFeature = (value: string) => {
+    const cleaned = value.trim();
+    if (!cleaned) return;
+    setFeatures((prev) => (prev.includes(cleaned) ? prev : [...prev, cleaned]));
+    setFeatureInput('');
+  };
+
+  const removeFeature = (value: string) => {
+    setFeatures((prev) => prev.filter((item) => item !== value));
+  };
+
+  const handleSubmit = () => {
+    if (!token) {
+      toast.error('Missing auth token');
+      return;
+    }
+
+    if (!planName.trim() || !price.trim()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    const priceValue = Number(price);
+    if (Number.isNaN(priceValue) || priceValue < 0) {
+      toast.error('Please enter a valid price');
+      return;
+    }
+
+    if (!duration.trim()) {
+      toast.error('Please select a duration');
+      return;
+    }
+
+    const cleanFeatures = features.map((item) => item.trim()).filter(Boolean);
+
+    const submissionData: SubscriptionData = {
+      planName: planName.trim(),
+      price: String(priceValue),
+      contentAccess: selectedTitles,
+      duration: duration.trim(),
+      features: cleanFeatures,
+      blogIds: selectedBlogIds,
+    };
+
+    if (mode === 'edit') {
+      onSubmit(submissionData);
+      return;
+    }
+
+    const payload = {
+      name: submissionData.planName,
+      price: priceValue,
+      duration: submissionData.duration,
+      features: submissionData.features,
+      blogs: submissionData.blogIds,
+    };
+
+    setIsSubmitting(true);
+
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/subscriber`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(data?.message || 'Failed to create subscription');
+        }
+        toast.success(data?.message || 'Subscription created successfully');
+
+        onSubmit(submissionData);
+
+        // Reset form
+        setPlanName('');
+        setPrice('');
+        setDuration('monthly');
+        setFeatureInput('');
+        setFeatures([]);
+        setSelectedBlogIds([]);
+        setSelectedBlogTitles([]);
+        onOpenChange(false);
+      })
+      .catch((error) => {
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to create subscription'
+        );
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   return (
@@ -145,31 +296,122 @@ function SubscriptionModalBase({
             </div>
           </div>
 
+          {/* Duration */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#2C2C2C] dark:text-white">
+              Duration
+            </label>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              className="h-10 w-full rounded-[6px] border border-[#D1D1D1] bg-white px-3 py-2 text-sm text-[#2C2C2C] focus:border-[#F66F7D] focus:outline-none dark:border-[#4A4A4A] dark:bg-[#2C2C2C] dark:text-white sm:h-11 sm:text-base"
+            >
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+
+          {/* Features */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-[#2C2C2C] dark:text-white">
+              Features
+            </label>
+            <div className="flex flex-wrap items-center gap-2 rounded-[6px] border border-[#D1D1D1] bg-white px-2 py-2 text-sm text-[#2C2C2C] focus-within:border-[#F66F7D] dark:border-[#4A4A4A] dark:bg-[#2C2C2C] dark:text-white">
+              {features.map((feature) => (
+                <span
+                  key={feature}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#F66F7D]/10 px-3 py-1 text-xs text-[#F66F7D]"
+                >
+                  {feature}
+                  <button
+                    type="button"
+                    onClick={() => removeFeature(feature)}
+                    className="text-[10px] text-[#F66F7D] hover:text-[#F66F7D]/70"
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+              <input
+                value={featureInput}
+                onChange={(e) => setFeatureInput(e.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ',') {
+                    event.preventDefault();
+                    addFeature(featureInput);
+                  }
+                }}
+                placeholder="Type a feature and press Enter"
+                className="flex-1 bg-transparent px-2 py-1 text-sm text-[#2C2C2C] outline-none placeholder:text-[#9A9A9A] dark:text-white dark:placeholder:text-[#8B8B8B]"
+              />
+            </div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-[#9A9A9A] dark:text-[#8B8B8B]">
+              <span>Press Enter or comma to add.</span>
+              {featureInput.trim() ? (
+                <button
+                  type="button"
+                  onClick={() => addFeature(featureInput)}
+                  className="text-[#F66F7D]"
+                >
+                  Add
+                </button>
+              ) : null}
+            </div>
+          </div>
+
           {/* Content Access */}
           <div className="space-y-3">
             <label className="text-sm font-medium text-[#2C2C2C] dark:text-white">
               Content Access
             </label>
             <div className="space-y-2">
-              {contentItems.map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 rounded-[6px] p-2 transition-colors hover:bg-[#F5F5F5] dark:hover:bg-[#3A3A3A]"
-                >
-                  <Checkbox
-                    id={item}
-                    checked={selectedContent.includes(item)}
-                    onCheckedChange={() => handleToggleContent(item)}
-                    className="border-[#D1D1D1] bg-white dark:border-[#4A4A4A] dark:bg-transparent"
-                  />
-                  <label
-                    htmlFor={item}
-                    className="flex-1 cursor-pointer text-sm text-[#2C2C2C] dark:text-white"
+              {isBlogsLoading || status === 'loading' ? (
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={`skeleton-${index}`}
+                    className="flex items-center gap-3 rounded-[6px] p-2"
                   >
-                    {item}
-                  </label>
-                </div>
-              ))}
+                    <div className="h-4 w-4 rounded bg-[#E6E6E6] dark:bg-[#3A3A3A] animate-pulse" />
+                    <div className="h-4 w-3/4 rounded bg-[#E6E6E6] dark:bg-[#3A3A3A] animate-pulse" />
+                  </div>
+                ))
+              ) : blogsError ? (
+                <p className="text-sm text-[#9A9A9A] dark:text-[#B3B3B3]">
+                  {blogsError}
+                </p>
+              ) : blogs.length === 0 ? (
+                <p className="text-sm text-[#9A9A9A] dark:text-[#B3B3B3]">
+                  No blogs found.
+                </p>
+              ) : (
+                blogs.map((blog) => {
+                  const titleText = blog.title?.trim() || 'Untitled';
+                  const isSelected =
+                    selectedBlogIds.includes(blog._id) ||
+                    selectedBlogTitles.includes(titleText);
+                  return (
+                    <div
+                      key={blog._id}
+                      className="flex items-center gap-3 rounded-[6px] p-2 transition-colors hover:bg-[#F5F5F5] dark:hover:bg-[#3A3A3A]"
+                    >
+                      <Checkbox
+                        id={blog._id}
+                        checked={isSelected}
+                        onCheckedChange={() =>
+                          handleToggleContent(blog._id, titleText)
+                        }
+                        className="border-[#D1D1D1] bg-white dark:border-[#4A4A4A] dark:bg-transparent"
+                      />
+                      <label
+                        htmlFor={blog._id}
+                        className="flex-1 cursor-pointer text-sm text-[#2C2C2C] dark:text-white"
+                      >
+                        {titleText}
+                      </label>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -177,9 +419,10 @@ function SubscriptionModalBase({
         {/* Submit Button */}
         <Button
           onClick={handleSubmit}
-          className="w-full bg-[#F66F7D] hover:bg-[#F66F7D]/80 text-white font-semibold h-10 sm:h-12 rounded-[8px] text-sm sm:text-base transition-colors mt-4"
+          disabled={isSubmitting}
+          className="w-full bg-[#F66F7D] hover:bg-[#F66F7D]/80 text-white font-semibold h-10 sm:h-12 rounded-[8px] text-sm sm:text-base transition-colors mt-4 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitLabel}
+          {isSubmitting ? 'Saving...' : submitLabel}
         </Button>
       </DialogContent>
     </Dialog>
@@ -198,6 +441,7 @@ export function CreateSubscriptionModal({
       onSubmit={onSubmit}
       title="Create Subscriptions"
       submitLabel="Create"
+      mode="create"
     />
   );
 }
@@ -216,6 +460,7 @@ export function EditSubscriptionModal({
       title="Edit Subscription"
       submitLabel="Update"
       initialData={initialData}
+      mode="edit"
     />
   );
 }

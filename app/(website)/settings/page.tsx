@@ -26,38 +26,8 @@ export default function SettingsPage() {
   const [publicProfile, setPublicProfile] = useState(true);
   const [matureContent, setMatureContent] = useState(false);
 
-  /* Notifications */
-  const [notifications, setNotifications] = useState({
-    newChapterUpdates: true,
-    authorPosts: true,
-    premiumContentAlerts: true,
-    recommendedStories: true,
-    authorYouFollowUpdates: true,
-    paymentSuccessfulConfirmation: true,
-    paymentFailedAlert: true,
-    emailNotifications: false,
-  });
-
-  const toggleNotification = (key: keyof typeof notifications) =>
-    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
-
   /* Security */
   const [loginAlerts, setLoginAlerts] = useState(true);
-  const [devices, setDevices] = useState([
-    { id: 1, browser: "Chrome", os: "Windows", location: "Mar del Plata", lastActive: "2 hours ago" },
-    { id: 2, browser: "Chrome", os: "Windows", location: "Mannheim", lastActive: "2 hours ago" },
-  ]);
-
-  const logoutDevice = (id: number) =>
-    setDevices((prev) => prev.filter((d) => d.id !== id));
-
-  /* Static data */
-  const accountRows = [
-    { label: "Email Address", value: "jackson.graham@example.com" },
-    { label: "Username", value: "@estherhoward" },
-    { label: "Phone Number", value: "(201) 555-0124" },
-    { label: "Blocked Author", value: "" },
-  ];
 
   const notificationRows = [
     { key: "newChapterUpdates", label: "New Chapter Updates" },
@@ -65,7 +35,7 @@ export default function SettingsPage() {
     { key: "premiumContentAlerts", label: "Premium Content Alerts" },
     { key: "recommendedStories", label: "Recommended Stories" },
     { key: "authorYouFollowUpdates", label: "Author You Follow Updates" },
-    { key: "paymentSuccessfulConfirmation", label: "Payment Successful Confirmation" },
+    { key: "paymentSuccessConfirmation", label: "Payment Success Confirmation" },
     { key: "paymentFailedAlert", label: "Payment Failed Alert" },
     { key: "emailNotifications", label: "Email Notifications" },
   ] as const;
@@ -105,7 +75,6 @@ export default function SettingsPage() {
         {/* ── ACCOUNT SETTINGS ── */}
         {activeTab === "Account Settings" && (
           <AccountSettings
-            accountRows={accountRows}
             publicProfile={publicProfile}
             onTogglePublicProfile={() => setPublicProfile((prev) => !prev)}
             matureContent={matureContent}
@@ -115,19 +84,12 @@ export default function SettingsPage() {
 
         {/* ── NOTIFICATION SETTINGS ── */}
         {activeTab === "Notification Settings" && (
-          <NotificationSettings
-            notificationRows={notificationRows}
-            notifications={notifications}
-            onToggle={toggleNotification}
-          />
+          <NotificationSettings notificationRows={notificationRows} />
         )}
 
         {/* ── SECURITY SETTINGS ── */}
         {activeTab === "Security Settings" && (
           <SecuritySettings
-            devices={devices}
-            onLogoutDevice={logoutDevice}
-            onLogoutAll={() => setDevices([])}
             loginAlerts={loginAlerts}
             onToggleLoginAlerts={() => setLoginAlerts((prev) => !prev)}
           />
