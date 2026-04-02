@@ -31,10 +31,12 @@ export function Toggle({ checked, onChange }: ToggleProps) {
 /* ─── Password Input ──────────────────────────────────────── */
 type PasswordInputProps = {
   label: string;
-  defaultValue?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
 };
 
-export function PasswordInput({ label, defaultValue = "password123" }: PasswordInputProps) {
+export function PasswordInput({ label, value, onChange, placeholder }: PasswordInputProps) {
   const [show, setShow] = useState(false);
 
   return (
@@ -43,10 +45,13 @@ export function PasswordInput({ label, defaultValue = "password123" }: PasswordI
       <div className="flex items-center  border border-[#D7D7D7] rounded-[4px] px-3.5 h-[50px] gap-2">
         <input
           type={show ? "text" : "password"}
-          defaultValue={defaultValue}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
           className="flex-1 bg-transparent border-0 outline-none text-[color:var(--text-primary)] text-sm tracking-widest"
         />
         <button
+          type="button"
           onClick={() => setShow(!show)}
           className="text-[color:var(--text-muted)] flex items-center bg-transparent border-0 cursor-pointer p-0"
         >
