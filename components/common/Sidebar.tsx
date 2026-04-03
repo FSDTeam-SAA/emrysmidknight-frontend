@@ -1,8 +1,10 @@
 'use client'
-import React from 'react'
-import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard } from 'lucide-react'
+import React, { useState } from 'react'
+import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 export const navigationItems = [
   { name: 'Home', icon: Home, href: '/', color: '' },
@@ -16,6 +18,11 @@ export const navigationItems = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false)
+
+  const handleConfirmLogout = async () => {
+    await signOut({ callbackUrl: '/signin' })
+  }
 
   return (
     <div className="w-full min-h-screen mt-8">
@@ -50,7 +57,45 @@ export default function Sidebar() {
             </Link>
           )
         })}
+
+        <button
+          onClick={() => setLogoutModalOpen(true)}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors hover:bg-[#FEF1F2] dark:hover:bg-[#FFFFFF0D] group"
+        >
+          <LogOut
+            size={24}
+            className="text-[#121212] dark:text-white group-hover:text-[#F66F7D] text-[20px] font-medium leading-[120%]"
+          />
+          <span className="font-medium text-[#121212] dark:text-white group-hover:text-[#F66F7D]">
+            Logout
+          </span>
+        </button>
       </nav>
+
+      <Dialog open={logoutModalOpen} onOpenChange={setLogoutModalOpen}>
+        <DialogContent className="w-full max-w-sm rounded-xl bg-white p-5 dark:bg-[#2C2C2C]">
+          <h3 className="text-lg font-semibold text-[color:var(--text-primary)]">
+            Confirm Logout
+          </h3>
+          <p className="mt-2 text-sm text-[color:var(--text-secondary)]">
+            Are you sure you want to logout?
+          </p>
+          <div className="mt-5 flex items-center justify-end gap-2">
+            <button
+              onClick={() => setLogoutModalOpen(false)}
+              className="rounded-md border border-[color:var(--border)] px-3 py-2 text-sm font-medium text-[color:var(--text-primary)] transition hover:bg-[color:var(--surface)]"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmLogout}
+              className="rounded-md bg-[#F66F7D] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#e85d6b]"
+            >
+              Logout
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

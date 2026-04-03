@@ -84,10 +84,11 @@ export function StoryPost({
 
   const session = useSession();
   const TOKEN = session?.data?.user?.accessToken || "";
+  const isLoggedIn = session.status === "authenticated" && Boolean(TOKEN);
 
   const isLong = content.length > MAX_CHARS;
-  const displayedContent =
-    expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
+  // const displayedContent =
+  //   expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
 
   const likeMutation = useMutation({
     mutationFn: async (postId: string) => {
@@ -115,9 +116,14 @@ export function StoryPost({
   });
 
   const handleLike = () => {
+    if (!isLoggedIn) {
+      toast.warning("Please login first to like this post.");
+      return;
+    }
     if (!id || likeMutation.isPending) return;
-    setIsLiked(!isLiked);
-    setLikeCount(isLiked ? likeCount - 1 : likeCount + 1);
+    const currentlyLiked = isLiked;
+    setIsLiked(!currentlyLiked);
+    setLikeCount((prev) => (currentlyLiked ? prev - 1 : prev + 1));
     likeMutation.mutate(id);
   };
 
@@ -197,7 +203,15 @@ export function StoryPost({
           }`}
         >
           <p className="px-5 pt-3 text-sm leading-6 text-[#121212] dark:text-[#c9c9c9] whitespace-pre-wrap">
-            {displayedContent}
+            <span
+              dangerouslySetInnerHTML={{
+                __html:
+                  expanded || !isLong
+                    ? content
+                    : content.slice(0, MAX_CHARS) + "...",
+              }}
+            />
+
             {isLong && !locked && (
               <button
                 onClick={() => setExpanded(!expanded)}
@@ -285,15 +299,15 @@ export function StoryPost({
 
         {/* Unlock overlay */}
         {locked && (
-  <div className="absolute bottom-24 left-6 z-10">
-    <UnlockDialog
-      title={title}
-      author={author}
-      content={content}
-      image={image}
-    />
-  </div>
-)}
+          <div className="absolute bottom-24 left-6 z-10">
+            <UnlockDialog
+              title={title}
+              author={author}
+              content={content}
+              image={image}
+            />
+          </div>
+        )}
       </div>
 
       {/* Comment Modal */}

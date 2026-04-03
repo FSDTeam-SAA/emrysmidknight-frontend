@@ -12,6 +12,7 @@ export default function Home() {
   const { data: session, status } = useSession();
 
   const token = session?.user?.accessToken;
+  const currentUserId = session?.user?.id;
   const isLoggedIn = !!token;
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -80,6 +81,11 @@ export default function Home() {
               title={post.title}
               content={post.content}
               likes={post.likes?.length || 0}
+              liked={
+                Array.isArray(post.likes) &&
+                Boolean(currentUserId) &&
+                post.likes.some((likedUserId: string) => likedUserId === currentUserId)
+              }
               comments={post.comments?.length || 0}
               commentsData={commentsData}
               image={post.image?.[0]}
