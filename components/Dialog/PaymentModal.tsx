@@ -32,7 +32,7 @@ export function PaymentModal({ open, onClose }: PaymentModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="p-0 overflow-hidden rounded-2xl border-0 gap-0 !max-w-2xl w-full">
+      <DialogContent className="border-0 gap-0 !max-w-2xl w-full p-0 flex flex-col h-[90vh] rounded-lg overflow-hidden [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button]:w-6 [&>button]:h-6 [&>button]:rounded-full [&>button]:bg-red-500 hover:[&>button]:bg-red-600 [&>button]:transition-colors [&>button_svg]:text-white [&>button_svg]:w-3 [&>button_svg]:h-3">
         <div className="bg-white p-7 pb-6">
 
           {/* Title */}

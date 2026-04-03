@@ -19,14 +19,17 @@ import Rightsideber from "@/components/common/Rightsideber";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { navigationItems } from "@/components/common/Sidebar";
+import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeIcon, setActiveIcon] = useState<"bell" | "user" | null>(null);
+  const isLoggedIn = Boolean(session?.user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -181,36 +184,47 @@ export default function Navbar() {
 
         {/* RIGHT: Icons */}
         <div className="ml-2 flex shrink-0 items-center gap-1 sm:gap-2">
-          <button
-            onClick={() => handleIconClick("bell")}
-            className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a14] sm:h-10 sm:w-10 md:h-auto md:w-auto"
-            aria-label="Notifications"
-          >
-            <Bell
-              size={40}
-              className={`transition-colors duration-150 ${
-                activeIcon === "bell"
-                  ? "text-[#F66F7D]"
-                  : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
-              } md:size-[40px] sm:size-[26px] size-[22px]`}
-            />
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-[#c9727a] dark:border-[#121212] sm:h-2.5 sm:w-2.5 md:right-1 md:top-1" />
-          </button>
+          {isLoggedIn ? (
+            <>
+              <button
+                onClick={() => handleIconClick("bell")}
+                className="relative flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a14] sm:h-10 sm:w-10 md:h-auto md:w-auto"
+                aria-label="Notifications"
+              >
+                <Bell
+                  size={40}
+                  className={`transition-colors duration-150 ${
+                    activeIcon === "bell"
+                      ? "text-[#F66F7D]"
+                      : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
+                  } md:size-[40px] sm:size-[26px] size-[22px]`}
+                />
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-[#c9727a] dark:border-[#121212] sm:h-2.5 sm:w-2.5 md:right-1 md:top-1" />
+              </button>
 
-          <button
-            onClick={() => handleIconClick("user")}
-            className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a14] sm:h-10 sm:w-10 md:h-auto md:w-auto"
-            aria-label="Profile"
-          >
-            <User
-              size={40}
-              className={`transition-colors duration-150 ${
-                activeIcon === "user"
-                  ? "text-[#F66F7D]"
-                  : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
-              } md:size-[40px] sm:size-[26px] size-[22px]`}
-            />
-          </button>
+              <button
+                onClick={() => handleIconClick("user")}
+                className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a14] sm:h-10 sm:w-10 md:h-auto md:w-auto"
+                aria-label="Profile"
+              >
+                <User
+                  size={40}
+                  className={`transition-colors duration-150 ${
+                    activeIcon === "user"
+                      ? "text-[#F66F7D]"
+                      : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
+                  } md:size-[40px] sm:size-[26px] size-[22px]`}
+                />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => router.push("/signin")}
+              className="rounded-full bg-[#F66F7D] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e85d6b]"
+            >
+              Login
+            </button>
+          )}
         </div>
       </nav>
 

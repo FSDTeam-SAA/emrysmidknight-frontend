@@ -12,6 +12,7 @@ export default function Home() {
   const { data: session, status } = useSession();
 
   const token = session?.user?.accessToken;
+  const currentUserId = session?.user?.id;
   const isLoggedIn = !!token;
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
@@ -47,7 +48,7 @@ export default function Home() {
 
           const commentsData: CommentData[] = topLevel.map((c: any) => ({
             id: c._id,
-            author: c.user?.fullName ?? "Anonymous",
+            author: c.user?.userName ?? "Anonymous",
             avatar: c.user?.profilePicture ?? "",
             handle: c.user?.userName ?? "",
             time: c.createdAt
@@ -59,7 +60,7 @@ export default function Home() {
               .filter((r: any) => r.parentComment === c._id)
               .map((r: any) => ({
                 id: r._id,
-                author: r.user?.fullName ?? "Anonymous",
+                author: r.user?.userName ?? "Anonymous",
                 avatar: r.user?.profilePicture ?? "",
                 handle: r.user?.userName ?? "",
                 time: r.createdAt
@@ -73,13 +74,18 @@ export default function Home() {
           return (
             <StoryPost
               key={index}
-              author={post.author?.fullName || "Unknown"}
+              author={post.author?.userName || "Unknown"}
               handle={post.author?.userName}
               avatar={post.author?.profileImage || ""}
               timestamp={post.createdAt}
               title={post.title}
               content={post.content}
               likes={post.likes?.length || 0}
+              liked={
+                Array.isArray(post.likes) &&
+                Boolean(currentUserId) &&
+                post.likes.some((likedUserId: string) => likedUserId === currentUserId)
+              }
               comments={post.comments?.length || 0}
               commentsData={commentsData}
               image={post.image?.[0]}

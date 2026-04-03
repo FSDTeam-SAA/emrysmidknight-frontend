@@ -13,6 +13,9 @@ import Image from "next/image";
 import { UnlockDialog } from "../Dialog/UnlockDialog";
 import { CommentModal } from "../Dialog/CommentModal";
 import { formatDistanceToNow } from "date-fns";
+import { useSession } from "next-auth/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export interface ReplyData {
   id: string;
@@ -49,7 +52,7 @@ interface StoryPostProps {
   video?: string;
   locked?: boolean;
   bookmarked?: boolean;
-  liked?: boolean;   // ✅ server থেকে আসা — user আগে like করেছে কিনা
+  liked?: boolean;
   id?: string;
 }
 
@@ -69,16 +72,93 @@ export function StoryPost({
   video,
   locked,
   bookmarked = false,
-  liked = false,   // ✅
+  liked = false,
   id,
 }: StoryPostProps) {
   const [expanded, setExpanded] = useState(false);
+  const [isLiked, setIsLiked] = useState(liked);
+  const [likeCount, setLikeCount] = useState(likes);
   const [isBookmarked, setIsBookmarked] = useState(bookmarked);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const session = useSession();
+  const TOKEN = session?.data?.user?.accessToken || "";
+  const isLoggedIn = session.status === "authenticated" && Boolean(TOKEN);
 
   const isLong = content.length > MAX_CHARS;
-  const displayedContent =
-    expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
+  // const displayedContent =
+  //   expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
+
+  const likeMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/blog/${postId}/like-unlike`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        },
+      );
+      if (!res.ok) throw new Error("Failed to like post");
+      return res.json();
+    },
+    onError: (err) => {
+      toast.error(
+        err.message || "Failed to update like status. Please try again.",
+      );
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Like status updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["blogData"] });
+    },
+  });
+
+  const handleLike = () => {
+    if (!isLoggedIn) {
+      toast.warning("Please login first to like this post.");
+      return;
+    }
+    if (!id || likeMutation.isPending) return;
+    const currentlyLiked = isLiked;
+    setIsLiked(!currentlyLiked);
+    setLikeCount((prev) => (currentlyLiked ? prev - 1 : prev + 1));
+    likeMutation.mutate(id);
+  };
+
+  const bookmarkMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/bookmark`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ blog: postId }), // ✅ body add
+        },
+      );
+      if (!res.ok) throw new Error("Failed to bookmark post");
+      return res.json();
+    },
+    onError: (err) => {
+      toast.error(
+        err.message || "Failed to update bookmark status. Please try again.",
+      );
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Bookmark status updated successfully!");
+      setIsBookmarked(!isBookmarked);
+      queryClient.invalidateQueries({ queryKey: ["blogData"] });
+    },
+  });
+
+  const handleBookmark = () => {
+    if (!id || bookmarkMutation.isPending) return;
+    bookmarkMutation.mutate(id);
+  };
 
   return (
     <>
@@ -123,7 +203,15 @@ export function StoryPost({
           }`}
         >
           <p className="px-5 pt-3 text-sm leading-6 text-[#121212] dark:text-[#c9c9c9] whitespace-pre-wrap">
-            {displayedContent}
+            <span
+              dangerouslySetInnerHTML={{
+                __html:
+                  expanded || !isLong
+                    ? content
+                    : content.slice(0, MAX_CHARS) + "...",
+              }}
+            />
+
             {isLong && !locked && (
               <button
                 onClick={() => setExpanded(!expanded)}
@@ -162,19 +250,25 @@ export function StoryPost({
         {/* Footer */}
         <div className="mt-5 flex items-center justify-between border-t border-[#D7D7D7] px-5 py-4 text-[#8c8c8c]">
           <div className="flex items-center gap-4">
-            {/* ✅ ThumbsUp — liked থাকলে filled, না থাকলে outline */}
-            <div className="flex items-center gap-2">
+            {/* Like Button */}
+            <button
+              onClick={handleLike}
+              disabled={likeMutation.isPending}
+              className="flex items-center gap-2 hover:opacity-70 transition-opacity disabled:opacity-50"
+            >
               <ThumbsUp
                 className={`w-4 h-4 transition-all duration-200 ${
-                  liked
+                  isLiked
                     ? "fill-[#F66F7D] stroke-[#F66F7D]"
                     : "fill-none stroke-[#71717a]"
                 }`}
               />
               <span className="text-sm font-semibold text-[#121212] dark:text-white">
-                {likes >= 1000 ? `${Math.floor(likes / 1000)}K` : likes}
+                {likeCount >= 1000
+                  ? `${Math.floor(likeCount / 1000)}K`
+                  : likeCount}
               </span>
-            </div>
+            </button>
 
             <button
               onClick={() => setCommentModalOpen(true)}
@@ -187,9 +281,11 @@ export function StoryPost({
             </button>
           </div>
 
+          {/* Bookmark Button */}
           <button
-            onClick={() => setIsBookmarked(!isBookmarked)}
-            className="h-8 w-8 flex items-center justify-center rounded-md transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            onClick={handleBookmark}
+            disabled={bookmarkMutation.isPending}
+            className="h-8 w-8 flex items-center justify-center rounded-md transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-50"
           >
             <Bookmark
               className={`w-5 h-5 transition-all duration-200 ${
@@ -204,7 +300,12 @@ export function StoryPost({
         {/* Unlock overlay */}
         {locked && (
           <div className="absolute bottom-24 left-6 z-10">
-            <UnlockDialog />
+            <UnlockDialog
+              title={title}
+              author={author}
+              content={content}
+              image={image}
+            />
           </div>
         )}
       </div>
@@ -220,8 +321,8 @@ export function StoryPost({
         timestamp={timestamp}
         title={title}
         content={content}
-        liked={liked}         // ✅ সরাসরি prop পাঠানো হচ্ছে
-        totalLikes={likes}    // ✅ likes prop থেকে
+        liked={isLiked}
+        totalLikes={likeCount}
         totalComments={comments}
         bookmarked={isBookmarked}
         commentsData={commentsData}

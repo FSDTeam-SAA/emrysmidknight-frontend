@@ -1,18 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  CornerUpLeft,
-  Send,
-  MoreHorizontal,
-  X,
-} from "lucide-react";
+import { CornerUpLeft, Send, MoreHorizontal, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import type { CommentData, ReplyData } from "../home/StoryPost";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -62,6 +57,7 @@ export function CommentModal({
   const session = useSession();
   const token = session?.data?.user?.accessToken;
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (open) {
@@ -83,7 +79,8 @@ export function CommentModal({
   // ── Comment mutation ──
   const commentMutation = useMutation({
     mutationFn: async (text: string) => {
-      if (!text || text.trim() === "") throw new Error("Comment text cannot be empty");
+      if (!text || text.trim() === "")
+        throw new Error("Comment text cannot be empty");
       const res = await fetch(`${baseURL}/comment/${id}`, {
         method: "POST",
         headers: {
@@ -98,13 +95,23 @@ export function CommentModal({
       }
       return res.json();
     },
-    onSuccess: () => toast.success("Comment added successfully!"),
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Failed to add comment"),
+    onSuccess: () => {
+      toast.success("Comment added successfully!");
+      queryClient.invalidateQueries({ queryKey: ["blogData"] });
+    },
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : "Failed to add comment"),
   });
 
   // ── Reply mutation ──
   const replyMutation = useMutation({
-    mutationFn: async ({ commentId, text }: { commentId: string; text: string }) => {
+    mutationFn: async ({
+      commentId,
+      text,
+    }: {
+      commentId: string;
+      text: string;
+    }) => {
       const res = await fetch(`${baseURL}/comment/${id}/reply/${commentId}`, {
         method: "POST",
         headers: {
@@ -117,7 +124,8 @@ export function CommentModal({
       return res.json();
     },
     onSuccess: () => toast.success("Reply added!"),
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Failed to add reply"),
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : "Failed to add reply"),
   });
 
   // ── Handlers ──
@@ -162,26 +170,33 @@ export function CommentModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogOverlay className="bg-black/80" />
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
+    >
       <DialogContent
-        className="p-0 flex flex-col !max-w-3xl w-full h-[90vh] rounded-lg overflow-hidden"
+        className="p-0 flex flex-col !max-w-3xl w-full h-[90vh] rounded-lg overflow-hidden [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button]:w-6 [&>button]:h-6 [&>button]:rounded-full [&>button]:bg-red-500 hover:[&>button]:bg-red-600 [&>button]:transition-colors [&>button_svg]:text-white [&>button_svg]:w-3 [&>button_svg]:h-3"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden bg-white dark:bg-[#1a1a1a]">
-
           {/* ── Post ── */}
           <div className="p-5 pb-0">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-3">
                 <div>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{author}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">
+                    {author}
+                  </p>
                   <p className="text-xs text-gray-400">@{handle}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatDistanceToNow(new Date(timestamp), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(timestamp), {
+                    addSuffix: true,
+                  })}
                 </span>
                 <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400">
                   <MoreHorizontal size={18} />
@@ -193,9 +208,10 @@ export function CommentModal({
               {title}
             </h2>
 
-            <p className="text-sm text-gray-700 dark:text-[#c9c9c9] leading-relaxed mb-4 whitespace-pre-wrap">
-              {content}
-            </p>
+            <p
+              className="text-sm text-gray-700 dark:text-[#c9c9c9] leading-relaxed mb-4 whitespace-pre-wrap"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
 
             {image && !video && (
               <div className="mb-4">
@@ -204,7 +220,7 @@ export function CommentModal({
                   alt="Post image"
                   width={600}
                   height={380}
-                  className="w-full h-[320px] object-cover rounded-lg"
+                  className="w-full h-[320px] object-cover rounded-[8px]"
                 />
               </div>
             )}
@@ -223,7 +239,9 @@ export function CommentModal({
           {/* ── Main comment input ── */}
           <div className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 dark:border-[#2a2a2a]">
             <Avatar className="w-8 h-8 flex-shrink-0">
-              <AvatarFallback className="text-[12px] bg-pink-200 text-pink-500">Y</AvatarFallback>
+              <AvatarFallback className="text-[12px] bg-pink-200 text-pink-500">
+                Y
+              </AvatarFallback>
             </Avatar>
             <div className="relative flex-1">
               <input
@@ -231,7 +249,9 @@ export function CommentModal({
                 placeholder="Write a comment.."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") handleAddComment(); }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleAddComment();
+                }}
                 className="w-full h-9 px-3 pr-10 text-sm text-gray-900 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-1 focus:ring-pink-500 dark:bg-[#2a2a2a] dark:border-[#3a3a3a] dark:text-white dark:placeholder-gray-500"
               />
               <button
@@ -251,7 +271,10 @@ export function CommentModal({
             </p>
           ) : (
             mergedComments.map((comment) => (
-              <div key={comment.id} className="px-5 py-4 border-b border-gray-100 dark:border-[#2a2a2a]">
+              <div
+                key={comment.id}
+                className="px-5 py-4 border-b border-gray-100 dark:border-[#2a2a2a]"
+              >
                 <div className="flex gap-3">
                   <Avatar className="w-8 h-8 flex-shrink-0">
                     {comment.avatar ? (
@@ -268,9 +291,13 @@ export function CommentModal({
                         {comment.author}
                       </span>
                       {comment.handle && (
-                        <span className="text-xs text-gray-400">@{comment.handle}</span>
+                        <span className="text-xs text-gray-400">
+                          @{comment.handle}
+                        </span>
                       )}
-                      <span className="text-xs text-gray-400">· {comment.time}</span>
+                      <span className="text-xs text-gray-400">
+                        · {comment.time}
+                      </span>
                     </div>
 
                     <p className="text-sm text-gray-700 dark:text-[#c9c9c9] leading-snug mb-2">
@@ -283,7 +310,10 @@ export function CommentModal({
                           setReplyingTo(
                             replyingTo?.commentId === comment.id
                               ? null
-                              : { commentId: comment.id, authorName: comment.author },
+                              : {
+                                  commentId: comment.id,
+                                  authorName: comment.author,
+                                },
                           )
                         }
                         className="flex items-center gap-1 text-gray-400 hover:text-pink-500 transition-colors duration-200"
@@ -296,7 +326,9 @@ export function CommentModal({
                     {replyingTo?.commentId === comment.id && (
                       <div className="mt-3 flex items-center gap-2">
                         <Avatar className="w-7 h-7 flex-shrink-0">
-                          <AvatarFallback className="text-[11px] bg-pink-200 text-pink-500">Y</AvatarFallback>
+                          <AvatarFallback className="text-[11px] bg-pink-200 text-pink-500">
+                            Y
+                          </AvatarFallback>
                         </Avatar>
                         <div className="relative flex-1">
                           <input
@@ -307,13 +339,19 @@ export function CommentModal({
                             onChange={(e) => setReplyText(e.target.value)}
                             onKeyDown={(e) => {
                               if (e.key === "Enter") handleAddReply(comment.id);
-                              if (e.key === "Escape") { setReplyingTo(null); setReplyText(""); }
+                              if (e.key === "Escape") {
+                                setReplyingTo(null);
+                                setReplyText("");
+                              }
                             }}
                             className="w-full h-8 px-3 pr-16 text-sm text-gray-900 bg-gray-100 border border-pink-300 rounded-full focus:outline-none focus:ring-1 focus:ring-pink-500 dark:bg-[#2a2a2a] dark:border-pink-400 dark:text-white dark:placeholder-gray-500"
                           />
                           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                             <button
-                              onClick={() => { setReplyingTo(null); setReplyText(""); }}
+                              onClick={() => {
+                                setReplyingTo(null);
+                                setReplyText("");
+                              }}
                               className="text-gray-400 hover:text-gray-600"
                             >
                               <X size={12} />
@@ -333,10 +371,16 @@ export function CommentModal({
                     {comment.replies && comment.replies.length > 0 && (
                       <div className="mt-3 flex flex-col gap-2">
                         {comment.replies.map((reply: ReplyData) => (
-                          <div key={reply.id} className="flex gap-2 bg-gray-50 dark:bg-[#242424] rounded-lg p-3">
+                          <div
+                            key={reply.id}
+                            className="flex gap-2 bg-gray-50 dark:bg-[#242424] rounded-lg p-3"
+                          >
                             <Avatar className="w-7 h-7 flex-shrink-0">
                               {reply.avatar ? (
-                                <AvatarImage src={reply.avatar} alt={reply.author} />
+                                <AvatarImage
+                                  src={reply.avatar}
+                                  alt={reply.author}
+                                />
                               ) : (
                                 <AvatarFallback className="text-[11px] bg-pink-200 text-pink-500">
                                   {reply.author.charAt(0)}
@@ -349,9 +393,13 @@ export function CommentModal({
                                   {reply.author}
                                 </span>
                                 {reply.handle && (
-                                  <span className="text-xs text-gray-400">@{reply.handle}</span>
+                                  <span className="text-xs text-gray-400">
+                                    @{reply.handle}
+                                  </span>
                                 )}
-                                <span className="text-xs text-gray-400">· {reply.time}</span>
+                                <span className="text-xs text-gray-400">
+                                  · {reply.time}
+                                </span>
                               </div>
                               <p className="text-sm text-gray-700 dark:text-[#c9c9c9] leading-snug mb-1">
                                 {reply.text}
