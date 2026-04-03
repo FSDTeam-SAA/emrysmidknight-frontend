@@ -11,20 +11,26 @@ import { Lock } from "lucide-react";
 import Image from "next/image";
 import { PaymentModal } from "./PaymentModal";
 
-export function UnlockDialog() {
+interface UnlockDialogProps {
+  title: string;
+  author: string;
+  content: string;
+  image?: string;
+}
+
+export function UnlockDialog({ title, author, content, image }: UnlockDialogProps) {
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   const handleUnlockClick = () => {
-    setUnlockOpen(false);       // Unlock dialog বন্ধ
+    setUnlockOpen(false);
     setTimeout(() => {
-      setPaymentOpen(true);     // Payment modal খোলে (slight delay for smooth UX)
+      setPaymentOpen(true);
     }, 150);
   };
 
   return (
     <>
-      {/* ── Unlock Dialog ── */}
       <Dialog open={unlockOpen} onOpenChange={setUnlockOpen}>
         <DialogTrigger asChild>
           <div className="absolute bottom-2 left-4 z-10">
@@ -36,48 +42,38 @@ export function UnlockDialog() {
         </DialogTrigger>
 
         <DialogContent className="p-0 overflow-hidden rounded-2xl !max-w-lg w-full gap-0 border-0 bg-transparent">
-          {/* Full black backdrop */}
           <div className="absolute inset-0 bg-black z-0" />
 
-          {/* Cover Image — blurred */}
           <div className="w-full h-[300px] relative overflow-hidden z-10">
             <Image
-              src="/unlockImage.png"
+              src={image || "/unlockImage.png"}
               alt="Book Cover"
               fill
               className="object-cover blur-[6px] scale-[105%]"
             />
           </div>
 
-          {/* Content */}
           <div className="bg-white px-5 pt-5 pb-6 relative z-20 rounded-b-2xl">
-            {/* Meta info */}
             <div className="mb-3.5 space-y-1.5">
               <p className="text-[15px] text-[#1a1a1a]">
-                <span className="font-bold">Title:</span> Galactic Wars – Prologue
+                <span className="font-bold">Title:</span> {title}
               </p>
               <p className="text-[15px] text-[#1a1a1a]">
-                <span className="font-bold">Author:</span> Eleanor Pena
+                <span className="font-bold">Author:</span> {author}
               </p>
               <p className="text-[15px] text-[#1a1a1a]">
                 <span className="font-bold">Status:</span> Premium
               </p>
             </div>
 
-            {/* Description — blurred */}
             <div className="relative mb-6 overflow-hidden max-h-[60px]">
               <p className="text-[13px] text-[#555] leading-[1.6] select-none blur-sm">
-                Captain Raya stared at the horizon. The battle for Nova Prime had
-                begun, and nothing would ever be the same again. The stars burned
-                bright against the endless void as her fleet prepared for the
-                inevitable clash that would decide the fate of the galaxy.
+                {content}
               </p>
               <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-b from-transparent to-white" />
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3">
-              {/* Unlock → opens Payment */}
               <button
                 onClick={handleUnlockClick}
                 className="flex-1 h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-lg cursor-pointer hover:bg-[#e85d6b] transition-colors"
@@ -95,7 +91,6 @@ export function UnlockDialog() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Payment Modal ── */}
       <PaymentModal
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
