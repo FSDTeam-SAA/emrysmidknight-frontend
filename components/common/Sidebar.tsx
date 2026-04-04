@@ -21,7 +21,7 @@ export default function Sidebar() {
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
 
   const handleConfirmLogout = async () => {
-    await signOut({ callbackUrl: '/signin' })
+    await signOut({ callbackUrl: '/' })
   }
 
   return (

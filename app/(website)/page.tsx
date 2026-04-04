@@ -145,9 +145,14 @@ export default function Home() {
               commentsData={commentsData}
               image={post.image?.[0]}
               video={post.audio?.[0]}
-              locked={post.isLocked === true}
+              locked={
+                post.isLocked === true ||
+                (!isLoggedIn && post.audienceType === "paid")
+              }
+              bookmarked={post.isBookmarked === true}
               id={post._id}
               price={post.price}
+              audienceType ={post.audienceType}
             />
           );
         })}

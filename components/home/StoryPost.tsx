@@ -55,6 +55,7 @@ interface StoryPostProps {
   liked?: boolean;
   id?: string;
   price?: number;
+  audienceType?: "free" | "paid";
 }
 
 const MAX_CHARS = 220;
@@ -152,13 +153,13 @@ export function StoryPost({
     },
     onSuccess: (data) => {
       toast.success(data.message || "Bookmark status updated successfully!");
-      setIsBookmarked(!isBookmarked);
+      setIsBookmarked(true);
       queryClient.invalidateQueries({ queryKey: ["blogData"] });
     },
   });
 
   const handleBookmark = () => {
-    if (!id || bookmarkMutation.isPending) return;
+    if (!id || bookmarkMutation.isPending || isBookmarked) return;
     bookmarkMutation.mutate(id);
   };
 
@@ -259,7 +260,7 @@ export function StoryPost({
               className="flex items-center gap-2 hover:opacity-70 transition-opacity disabled:opacity-50"
             >
               <ThumbsUp
-                className={`w-5 h-5 transition-all duration-200 ${
+                className={`w-5.5 h-5 transition-all duration-200 ${
                   isLiked
                     ? "fill-[#F66F7D] stroke-[#F66F7D]"
                     : "fill-none stroke-[#71717a]"
@@ -276,7 +277,7 @@ export function StoryPost({
               onClick={() => setCommentModalOpen(true)}
               className="flex items-center gap-2 hover:opacity-70 transition-opacity"
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="w-5 h-5" />
               <span className="text-sm font-semibold text-[#121212] dark:text-white">
                 {comments}
               </span>
@@ -286,7 +287,7 @@ export function StoryPost({
           {/* Bookmark Button */}
           <button
             onClick={handleBookmark}
-            disabled={bookmarkMutation.isPending}
+            disabled={bookmarkMutation.isPending || isBookmarked}
             className="h-8 w-8 flex items-center justify-center rounded-md transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-50"
           >
             <Bookmark
