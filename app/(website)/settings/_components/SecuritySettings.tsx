@@ -32,12 +32,12 @@ type DeviceRow = {
   os: string;
   location: string;
   lastActive: string;
+  lastActiveRaw?: string;
   isActive: boolean;
 };
 
-type SecuritySettingsProps = {
-  loginAlerts: boolean;
-  onToggleLoginAlerts: () => void;
+type UserProfile = {
+  loginAlerts?: boolean;
 };
 
 const splitDeviceInfo = (value?: string) => {
@@ -72,6 +72,7 @@ const buildDeviceRow = (device: DeviceApi): DeviceRow => {
     os,
     location,
     lastActive: formatLastActive(device.lastActive),
+    lastActiveRaw: device.lastActive,
     isActive: Boolean(device.isActive),
   };
 };
@@ -101,10 +102,7 @@ function LoginDevicesSkeleton() {
   );
 }
 
-export default function SecuritySettings({
-  loginAlerts,
-  onToggleLoginAlerts,
-}: SecuritySettingsProps) {
+export default function SecuritySettings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -113,6 +111,90 @@ export default function SecuritySettings({
   const token = session?.user?.accessToken;
   const isSessionLoading = status === "loading";
   const queryClient = useQueryClient();
+
+  const {
+    data: profile,
+    isLoading: isProfileLoading,
+    error: profileError,
+  } = useQuery<UserProfile>({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      if (!token) throw new Error("Missing auth token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(result?.message || "Failed to fetch profile");
+      }
+      return (result?.data ?? result) as UserProfile;
+    },
+    enabled: !!token,
+  });
+
+  const loginAlertsValue = Boolean(profile?.loginAlerts);
+
+  const loginAlertsMutation = useMutation<
+    unknown,
+    Error,
+    boolean,
+    { previous?: UserProfile }
+  >({
+    mutationFn: async (nextValue: boolean) => {
+      if (!token) throw new Error("Missing auth token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ loginAlerts: nextValue }),
+        }
+      );
+      const result = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(result?.message || "Failed to update login alerts");
+      }
+      return result;
+    },
+    onMutate: async (nextValue) => {
+      await queryClient.cancelQueries({ queryKey: ["user-profile"] });
+      const previous = queryClient.getQueryData<UserProfile>(["user-profile"]);
+      queryClient.setQueryData<UserProfile>(["user-profile"], (old) => ({
+        ...(old ?? {}),
+        loginAlerts: nextValue,
+      }));
+      return { previous };
+    },
+    onError: (error, _nextValue, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["user-profile"], context.previous);
+      }
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to update login alerts";
+      toast.error(message);
+    },
+    onSuccess: () => {
+      toast.success("Login alerts updated");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+  });
+
+  const handleLoginAlertsToggle = () => {
+    if (!token || isProfileLoading || loginAlertsMutation.isPending) return;
+    loginAlertsMutation.mutate(!loginAlertsValue);
+  };
 
   const { data: devicesData, isLoading: isDevicesLoading, error } = useQuery({
     queryKey: ["login-devices"],
@@ -147,6 +229,15 @@ export default function SecuritySettings({
     () => devices.filter((device) => !hiddenDeviceIds.includes(device.id)),
     [devices, hiddenDeviceIds]
   );
+
+  const latestDevices = useMemo(() => {
+    const sorted = [...visibleDevices].sort((a, b) => {
+      const timeA = a.lastActiveRaw ? new Date(a.lastActiveRaw).getTime() : 0;
+      const timeB = b.lastActiveRaw ? new Date(b.lastActiveRaw).getTime() : 0;
+      return timeB - timeA;
+    });
+    return sorted.slice(0, 3);
+  }, [visibleDevices]);
 
   const handleLogoutOpenChange = (open: boolean) => {
     setIsLogoutOpen(open);
@@ -356,11 +447,11 @@ export default function SecuritySettings({
             <LoginDevicesSkeleton />
           ) : (
             <>
-              {visibleDevices.map((device, index) => (
+              {latestDevices.map((device, index) => (
                 <div
                   key={device.id}
                   className={`flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between ${
-                    index < visibleDevices.length - 1
+                    index < latestDevices.length - 1
                       ? "border-b border-gray-200 dark:border-white/10"
                       : ""
                   }`}
@@ -435,9 +526,18 @@ export default function SecuritySettings({
         </div>
 
         <div className="shrink-0">
-          <Toggle checked={loginAlerts} onChange={onToggleLoginAlerts} />
+          <Toggle
+            checked={loginAlertsValue}
+            onChange={handleLoginAlertsToggle}
+          />
         </div>
       </div>
+
+      {profileError && (
+        <p className="text-sm text-[#5E5E5E] dark:text-gray-300">
+          Failed to load login alert preference. Please try again.
+        </p>
+      )}
 
       <Dialog open={isLogoutOpen} onOpenChange={handleLogoutOpenChange}>
         <DialogContent className="sm:max-w-md bg-[#FFFFFF] dark:bg-[#2C2C2C]">

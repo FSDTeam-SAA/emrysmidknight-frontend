@@ -1,14 +1,39 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardPage from "./_components/DashboardPage";
 import SubscriptionTable from "./_components/SubscriptionTable";
 import { TransactionsTable } from "./_components/TransactionsTable";
 import { PlansTable } from "./_components/PlansTable";
+import MyBlogs from "./_components/MyBloge";
+import { useRouter, useSearchParams } from "next/navigation";
 
-const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan"];
+const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan","My blogs"] ;
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState(tabs[0]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabParam = useMemo(() => searchParams.get("tab"), [searchParams]);
+
+  useEffect(() => {
+    if (!tabParam) return;
+    const normalizedTab = tabs.find((tab) => tab === tabParam);
+    if (normalizedTab) {
+      setActiveTab(normalizedTab);
+    }
+  }, [tabParam]);
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === tabs[0]) {
+      params.delete("tab");
+    } else {
+      params.set("tab", tab);
+    }
+    const queryString = params.toString();
+    router.replace(`/dashboard${queryString ? `?${queryString}` : ""}`);
+  };
 
   return (
     <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:py-10">
@@ -29,7 +54,7 @@ export default function Page() {
               {tabs.map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => handleTabClick(tab)}
                   className={`whitespace-nowrap border-b-2 bg-transparent px-4 py-3 text-xs font-medium transition-colors duration-200 sm:px-5 sm:text-base ${
                     activeTab === tab
                       ? "border-[#F66F7D] text-[color:var(--text-primary)]"
@@ -53,6 +78,7 @@ export default function Page() {
           {activeTab === "Subscribers" && <SubscriptionTable />}
           {activeTab === "Primium Unlocks" && <TransactionsTable />}
           {activeTab === "Subscriptions Plan" && <PlansTable />}
+          {activeTab === "My blogs" && <MyBlogs />}
         </div>
       </div>
     </div>
