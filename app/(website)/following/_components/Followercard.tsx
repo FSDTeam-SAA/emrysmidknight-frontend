@@ -10,7 +10,6 @@ type FollowerCardProps = {
   bio: string;
   onViewProfile: () => void;
   onUnfollow: () => void;
-  onMore: () => void;
 };
 
 export default function FollowerCard({
@@ -23,7 +22,6 @@ export default function FollowerCard({
   bio,
   onViewProfile,
   onUnfollow,
-  onMore,
 }: FollowerCardProps) {
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-white dark:bg-white/5">
@@ -91,13 +89,13 @@ export default function FollowerCard({
         </p>
 
         {/* Actions */}
-        <div className="mt-2 grid grid-cols-3 gap-2">
+        <div className="mt-2 flex items-center justify-between gap-3">
           
           {/* View Profile */}
           <button
             onClick={onViewProfile}
             type="button"
-            className="flex w-full text-nowrap sm:w-auto justify-center items-center gap-1.5 rounded-[8px] px-4 h-[44px] sm:h-[48px] text-sm sm:text-base text-white font-medium bg-[#F66F7D]"
+            className="flex flex-1 justify-center items-center gap-1.5 rounded-[8px] px-4 h-[44px] sm:h-[48px] text-sm sm:text-base text-white font-medium bg-[#F66F7D] whitespace-nowrap"
           >
             <div className=" hidden md:block">
             <UserIcon />
@@ -109,21 +107,12 @@ export default function FollowerCard({
           <button
             onClick={onUnfollow}
             type="button"
-            className="flex w-full sm:w-auto justify-center items-center gap-1.5 rounded-[8px] px-4 h-[44px] sm:h-[48px] text-sm sm:text-base font-medium border border-[#F66F7D] bg-white/5 text-[#F66F7D]"
+            className="flex flex-1 justify-center items-center gap-1.5 rounded-[8px] px-4 h-[44px] sm:h-[48px] text-sm sm:text-base font-medium border border-[#F66F7D] bg-white/5 text-[#F66F7D] whitespace-nowrap"
           >
             <div className=" hidden md:block">
             <UserMinusIcon  />
             </div>
             Unfollow
-          </button>
-
-          {/* More */}
-          <button
-            onClick={onMore}
-            type="button"
-            className="sm:ml-auto flex h-[44px] w-full sm:w-9 items-center justify-center rounded-[8px] border border-white/10 bg-[#F2F2F2] dark:bg-[#5E5E5E] text-lg dark:text-white/60"
-          >
-            ···
           </button>
         </div>
       </div>
