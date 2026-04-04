@@ -12,7 +12,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { UnlockDialog } from "../Dialog/UnlockDialog";
 import { CommentModal } from "../Dialog/CommentModal";
-import { formatDistanceToNow } from "date-fns";
+import { formatRelativeTime } from "@/lib/date";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -90,6 +90,7 @@ export function StoryPost({
   const isLoggedIn = session.status === "authenticated" && Boolean(TOKEN);
 
   const isLong = content.length > MAX_CHARS;
+  const timestampLabel = formatRelativeTime(timestamp);
   // const displayedContent =
   //   expanded || !isLong ? content : content.slice(0, MAX_CHARS) + "...";
 
@@ -182,7 +183,7 @@ export function StoryPost({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-[#121212] dark:text-[#D7D7D7]">
-              {formatDistanceToNow(new Date(timestamp), { addSuffix: true })}
+              {timestampLabel}
             </span>
             <Button
               variant="ghost"

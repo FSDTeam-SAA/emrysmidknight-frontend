@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { CornerUpLeft, Send, MoreHorizontal, X } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatRelativeTime } from "@/lib/date";
 import Image from "next/image";
 import type { CommentData, ReplyData } from "../home/StoryPost";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -234,9 +234,7 @@ export function CommentModal({
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatDistanceToNow(new Date(timestamp), {
-                    addSuffix: true,
-                  })}
+                  {formatRelativeTime(timestamp)}
                 </span>
                 <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400">
                   <MoreHorizontal size={18} />

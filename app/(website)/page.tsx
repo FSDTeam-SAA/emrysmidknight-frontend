@@ -6,7 +6,7 @@ import type { CommentData } from "@/components/home/StoryPost";
 import { Blog } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { formatDistanceToNow } from "date-fns";
+import { formatRelativeTime } from "@/lib/date";
 import { Skeleton } from "@/components/ui/skeleton"; // ✅ added
 
 export default function Home() {
@@ -100,9 +100,7 @@ export default function Home() {
             avatar: c.user?.profilePicture ?? "",
             handle: c.user?.userName ?? "",
             time: c.createdAt
-              ? formatDistanceToNow(new Date(c.createdAt), {
-                  addSuffix: true,
-                })
+              ? formatRelativeTime(c.createdAt)
               : "",
             text: c.text ?? "",
             likes: c.likes?.length ?? 0,
@@ -114,9 +112,7 @@ export default function Home() {
                 avatar: r.user?.profilePicture ?? "",
                 handle: r.user?.userName ?? "",
                 time: r.createdAt
-                  ? formatDistanceToNow(new Date(r.createdAt), {
-                      addSuffix: true,
-                    })
+                  ? formatRelativeTime(r.createdAt)
                   : "",
                 text: r.text ?? "",
                 likes: r.likes?.length ?? 0,
