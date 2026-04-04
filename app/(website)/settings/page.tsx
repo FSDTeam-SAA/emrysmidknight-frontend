@@ -26,9 +26,6 @@ export default function SettingsPage() {
   const [publicProfile, setPublicProfile] = useState(true);
   const [matureContent, setMatureContent] = useState(false);
 
-  /* Security */
-  const [loginAlerts, setLoginAlerts] = useState(true);
-
   const notificationRows = [
     { key: "newChapterUpdates", label: "New Chapter Updates" },
     { key: "authorPosts", label: "Author Posts" },
@@ -89,10 +86,7 @@ export default function SettingsPage() {
 
         {/* ── SECURITY SETTINGS ── */}
         {activeTab === "Security Settings" && (
-          <SecuritySettings
-            loginAlerts={loginAlerts}
-            onToggleLoginAlerts={() => setLoginAlerts((prev) => !prev)}
-          />
+          <SecuritySettings />
         )}
 
         {/* ── PAYMENT METHODS ── */}

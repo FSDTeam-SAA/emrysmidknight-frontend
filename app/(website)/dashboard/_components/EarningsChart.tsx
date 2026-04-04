@@ -63,7 +63,7 @@ const CustomTooltip = (props: any) => {
 
 export function EarningsChart() {
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D] p-3 md:p-4 lg:p-6 rounded-[8px] [--chart-axis-text:#121212] dark:[--chart-axis-text:#FFFFFF]">
+    <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D] p-3 md:p-4 lg:p-6 rounded-[8px] [--chart-axis-text:#121212] dark:[--chart-axis-text:#FFFFFF] [--chart-grid:#D7D7D7] dark:[--chart-grid:#3f3f3f]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 gap-4">
         <h2 className="text-[#121212] dark:text-[#FFFFFF] text-lg sm:text-xl md:text-2xl font-medium">
           Total Earnings
@@ -89,7 +89,7 @@ export function EarningsChart() {
 
             <CartesianGrid
               strokeDasharray="0"
-              stroke="#3f3f3f"
+              stroke="var(--chart-grid)"
               vertical={false}
             />
 

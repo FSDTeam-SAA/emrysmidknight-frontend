@@ -28,7 +28,7 @@ type NotificationItemType = {
 const notifications: NotificationItemType[] = [
   {
     id: 1,
-    avatar: "https://i.pravatar.cc/48?img=1",
+    avatar: "",
     name: "Leslie Alexander",
     message: "has published a brand new story",
     highlight: '"The Shadow Kingdom"',
@@ -39,7 +39,7 @@ const notifications: NotificationItemType[] = [
   },
   {
     id: 2,
-    avatar: "https://i.pravatar.cc/48?img=2",
+    avatar: "",
     name: null,
     message:
       "New story recommendations are ready for you. Discover trending fantasy and mystery stories today.",
@@ -51,7 +51,7 @@ const notifications: NotificationItemType[] = [
   },
   {
     id: 3,
-    avatar: "https://i.pravatar.cc/48?img=3",
+    avatar: "",
     name: "Arlene McCoy",
     message: "has published a new chapter",
     highlight: '"Moonlight Diary – Chapter 6"',
@@ -62,7 +62,7 @@ const notifications: NotificationItemType[] = [
   },
   {
     id: 4,
-    avatar: "https://i.pravatar.cc/48?img=4",
+    avatar: "",
     name: null,
     message: "A new premium chapter is available now",
     highlight: '"Forest of Whispers – Chapter 5"',
@@ -73,7 +73,7 @@ const notifications: NotificationItemType[] = [
   },
   {
     id: 5,
-    avatar: "https://i.pravatar.cc/48?img=5",
+    avatar: "",
     name: "Guy Hawkins",
     message: "just posted a new fantasy story",
     highlight: `"Dragon's Awakening – Chapter 3"`,
