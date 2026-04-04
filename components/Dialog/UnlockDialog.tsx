@@ -12,13 +12,15 @@ import Image from "next/image";
 import { PaymentModal } from "./PaymentModal";
 
 interface UnlockDialogProps {
+  blogId?: string;
   title: string;
   author: string;
   content: string;
   image?: string;
+  price?: number; 
 }
 
-export function UnlockDialog({ title, author, content, image }: UnlockDialogProps) {
+export function UnlockDialog({ blogId, title, author, content, image, price }: UnlockDialogProps) {
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
 
@@ -76,13 +78,13 @@ export function UnlockDialog({ title, author, content, image }: UnlockDialogProp
             <div className="flex gap-3">
               <button
                 onClick={handleUnlockClick}
-                className="flex-1 h-[46px] bg-[#F66F7D] text-white text-[15px] font-semibold rounded-lg cursor-pointer hover:bg-[#e85d6b] transition-colors"
+                className="flex-1 h-[46px] bg-[#F66F7D] text-white text-[16px] font-semibold rounded-lg cursor-pointer hover:bg-[#e85d6b] transition-colors"
               >
-                Unlock $2
+                Unlock {price ? `$${price.toFixed(2)}` : ""}
               </button>
 
               <DialogClose asChild>
-                <button className="flex-1 h-[46px] bg-white text-[#F66F7D] text-[15px] font-semibold border-2 border-[#F66F7D] rounded-lg cursor-pointer hover:bg-[#fff0f1] transition-colors">
+                <button className="flex-1 h-[46px] bg-white text-[#F66F7D] text-[16px] font-semibold border-2 border-[#F66F7D] rounded-lg cursor-pointer hover:bg-[#fff0f1] transition-colors">
                   Cancel
                 </button>
               </DialogClose>
@@ -94,6 +96,8 @@ export function UnlockDialog({ title, author, content, image }: UnlockDialogProp
       <PaymentModal
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
+        blogId={blogId}
+        amount={price}
       />
     </>
   );

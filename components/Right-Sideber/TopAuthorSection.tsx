@@ -1,48 +1,44 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton"; // ✅ added
 
-interface Author {
-  id: string;
-  name: string;
-  image: string;
-  followers: number;
-  stories: number;
-}
+type TopAuthor = {
+  _id: string;
+  fullName?: string;
+  userName: string;
+  bio?: string;
+  followersReaders?: string[];
+  followersReadersCount?: number;
+};
 
-const authors: Author[] = [
-  {
-    id: "1",
-    name: "Jenny Wilson",
-    image: "/Author.png",
-    followers: 45000,
-    stories: 18,
-  },
-  {
-    id: "2",
-    name: "Arlene McCoy",
-    image: "/Author.png",
-    followers: 45000,
-    stories: 12,
-  },
-  {
-    id: "3",
-    name: "Jane Cooper",
-    image: "/Author.png",
-    followers: 45000,
-    stories: 10,
-  },
-  {
-    id: "4",
-    name: "Ronald Richards",
-    image: "/Author.png",
-    followers: 45000,
-    stories: 14,
-  },
-];
+type TopAuthorsResponse = {
+  statusCode?: number;
+  success?: boolean;
+  message?: string;
+  meta?: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  data: TopAuthor[];
+};
 
 export function TopAuthorSection() {
+  const { data: authors = [], isLoading, isError } = useQuery({
+    queryKey: ["top-authors"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/top-authors`,
+      );
+      if (!res.ok) throw new Error("Failed to fetch top authors");
+      const result: TopAuthorsResponse = await res.json();
+      return result?.data ?? [];
+    },
+  });
+
   return (
     <div className="w-full rounded-lg">
       <h2 className="text-[#121212] dark:text-white text-xl sm:text-2xl lg:text-[28px] font-medium sm:mb-5">
@@ -50,35 +46,86 @@ export function TopAuthorSection() {
       </h2>
 
       <div className="space-y-4">
-        {authors.map((author) => (
-          <Link key={author.id} href={`/author-profile/${author.id}`} className="block">
+        {/* ✅ Skeleton */}
+        {isLoading &&
+          [1, 2, 3].map((_, i) => (
             <div
-              className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border border-[#D7D7D7] dark:border-[#2C2C2C] rounded-[8px]"
+              key={i}
+              className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border border-[#D7D7D7] dark:border-[#2C2C2C] rounded-[8px] p-2"
             >
-              <div className="flex-shrink-0 w-20 h-20 sm:w-[102px] sm:h-[102px] relative  overflow-hidden">
-                <Image
-                  src={author.image}
-                  alt={author.name}
-                  width={1000}
-                  height={1000}
-                  className="object-cover w-full h-full rounded-l-[8px]"
-                />
-              </div>
+              <Skeleton className="w-20 h-20 sm:w-[102px] sm:h-[102px] rounded-[8px] bg-gray-200 dark:bg-gray-700" />
 
-              <div className="flex-1 pt-1">
-                <h3 className="text-[#121212] dark:text-white text-base sm:text-lg font-medium">
-                  {author.name}
-                </h3>
-                <p className="text-[#121212] dark:text-[#D7D7D7] text-xs sm:text-sm mt-1">
-                  Followers: {(author.followers / 1000).toFixed(0)}K
-                </p>
-                <p className="text-[#121212] dark:text-[#FFFFFF] font-medium text-sm sm:text-base">
-                  Total Stories: {author.stories}
-                </p>
+              <div className="flex-1 space-y-2">
+                <Skeleton className="w-40 h-4 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="w-28 h-3 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="w-24 h-4 bg-gray-200 dark:bg-gray-700" />
               </div>
             </div>
-          </Link>
-        ))}
+          ))}
+
+        {/* Error */}
+        {isError ? (
+          <div className="rounded-[8px] border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-300">
+            Failed to load top authors. Please try again.
+          </div>
+        ) : null}
+
+        {/* Empty */}
+        {!isLoading && !isError && authors.length === 0 ? (
+          <div className="rounded-[8px] border border-[#D7D7D7] dark:border-[#2C2C2C] bg-[#FFFFFF] dark:bg-[#FFFFFF0D] p-4 text-sm text-[#6B7280] dark:text-[#D7D7D7]">
+            No top authors found.
+          </div>
+        ) : null}
+
+        {/* Data */}
+        {!isLoading &&
+          !isError &&
+          authors.map((author) => {
+            const displayName =
+              author.fullName && author.fullName.trim().length > 0
+                ? author.fullName
+                : author.userName;
+
+            const followers =
+              typeof author.followersReadersCount === "number"
+                ? author.followersReadersCount
+                : author.followersReaders?.length || 0;
+
+            return (
+              <Link
+                key={author._id}
+                href={`/author-profile/${author._id}`}
+                className="block"
+              >
+                <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border border-[#D7D7D7] dark:border-[#2C2C2C] rounded-[8px]">
+                  <div className="flex-shrink-0 w-20 h-20 sm:w-[102px] sm:h-[102px] relative overflow-hidden">
+                    <Image
+                      src="/Author.png"
+                      alt={displayName}
+                      width={1000}
+                      height={1000}
+                      className="object-cover w-full h-full rounded-l-[8px]"
+                    />
+                  </div>
+
+                  <div className="flex-1 pt-1">
+                    <h3 className="text-[#121212] dark:text-white text-base sm:text-lg font-medium">
+                      {displayName}
+                    </h3>
+                    <p className="text-[#121212] dark:text-[#D7D7D7] text-xs sm:text-sm mt-1">
+                      @{author.userName}
+                    </p>
+                    <p className="text-[#121212] dark:text-[#FFFFFF] font-medium text-sm sm:text-base">
+                      Followers:{" "}
+                      {followers >= 1000
+                        ? `${Math.floor(followers / 1000)}K`
+                        : followers}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
       </div>
     </div>
   );

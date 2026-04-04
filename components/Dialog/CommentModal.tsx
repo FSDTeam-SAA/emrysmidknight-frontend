@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { CornerUpLeft, Send, MoreHorizontal, X } from "lucide-react";
@@ -53,9 +53,13 @@ export function CommentModal({
     authorName: string;
   } | null>(null);
   const [replyText, setReplyText] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const commentsEndRef = useRef<HTMLDivElement | null>(null);
 
   const session = useSession();
   const token = session?.data?.user?.accessToken;
+  const isLoggedIn =
+    session.status === "authenticated" && Boolean(token);
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
   const queryClient = useQueryClient();
 
@@ -64,6 +68,31 @@ export function CommentModal({
       setMergedComments(commentsData);
     }
   }, [open, commentsData, liked, totalLikes, bookmarked]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const scrollToBottom = () => {
+      const end = commentsEndRef.current;
+      const container = scrollContainerRef.current;
+      if (end) {
+        end.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+      if (container) {
+        container.scrollTop = container.scrollHeight;
+      }
+    };
+
+    const raf = requestAnimationFrame(scrollToBottom);
+    const timeoutA = window.setTimeout(scrollToBottom, 120);
+    const timeoutB = window.setTimeout(scrollToBottom, 280);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(timeoutA);
+      clearTimeout(timeoutB);
+    };
+  }, [open, mergedComments]);
 
   useEffect(() => {
     if (open) {
@@ -130,6 +159,10 @@ export function CommentModal({
 
   // ── Handlers ──
   const handleAddComment = () => {
+    if (!isLoggedIn) {
+      toast.warning("Please login first to comment on this post.");
+      return;
+    }
     if (!commentText.trim()) return;
     const newComment: CommentData = {
       id: String(Date.now()),
@@ -147,6 +180,10 @@ export function CommentModal({
   };
 
   const handleAddReply = (commentId: string) => {
+    if (!isLoggedIn) {
+      toast.warning("Please login first to reply on this comment.");
+      return;
+    }
     if (!replyText.trim()) return;
     const newReply: ReplyData = {
       id: String(Date.now()),
@@ -180,7 +217,10 @@ export function CommentModal({
         className="p-0 flex flex-col !max-w-3xl w-full h-[90vh] rounded-lg overflow-hidden [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button]:w-6 [&>button]:h-6 [&>button]:rounded-full [&>button]:bg-red-500 hover:[&>button]:bg-red-600 [&>button]:transition-colors [&>button_svg]:text-white [&>button_svg]:w-3 [&>button_svg]:h-3"
         onInteractOutside={(e) => e.preventDefault()}
       >
-        <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden bg-white dark:bg-[#1a1a1a]">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden bg-white dark:bg-[#1a1a1a] scroll-smooth"
+        >
           {/* ── Post ── */}
           <div className="p-5 pb-0">
             <div className="flex justify-between items-center mb-3">
@@ -414,6 +454,7 @@ export function CommentModal({
               </div>
             ))
           )}
+          <div ref={commentsEndRef} />
         </div>
       </DialogContent>
     </Dialog>
