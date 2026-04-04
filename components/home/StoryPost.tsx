@@ -54,6 +54,7 @@ interface StoryPostProps {
   bookmarked?: boolean;
   liked?: boolean;
   id?: string;
+  price?: number;
 }
 
 const MAX_CHARS = 220;
@@ -74,6 +75,7 @@ export function StoryPost({
   bookmarked = false,
   liked = false,
   id,
+  price,
 }: StoryPostProps) {
   const [expanded, setExpanded] = useState(false);
   const [isLiked, setIsLiked] = useState(liked);
@@ -257,7 +259,7 @@ export function StoryPost({
               className="flex items-center gap-2 hover:opacity-70 transition-opacity disabled:opacity-50"
             >
               <ThumbsUp
-                className={`w-4 h-4 transition-all duration-200 ${
+                className={`w-5 h-5 transition-all duration-200 ${
                   isLiked
                     ? "fill-[#F66F7D] stroke-[#F66F7D]"
                     : "fill-none stroke-[#71717a]"
@@ -301,10 +303,12 @@ export function StoryPost({
         {locked && (
           <div className="absolute bottom-24 left-6 z-10">
             <UnlockDialog
+              blogId={id}
               title={title}
               author={author}
               content={content}
               image={image}
+              price={price}
             />
           </div>
         )}

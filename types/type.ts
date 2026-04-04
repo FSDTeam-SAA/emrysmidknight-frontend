@@ -25,6 +25,7 @@ export interface Blog {
   comments: string[];
   likes: string[];
   isLocked?: boolean;
+  
 }
 
 export interface BlogResponse {

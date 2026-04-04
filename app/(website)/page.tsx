@@ -7,6 +7,7 @@ import { Blog } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton"; // ✅ added
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -32,8 +33,56 @@ export default function Home() {
     },
   });
 
+  // ✅ Card-style Skeleton UI
   if (isLoading || status === "loading") {
-    return <p>Loading...</p>;
+    return (
+      <div className="py-8 flex flex-col items-center gap-4 px-0 lg:px-4">
+        {[1, 2, 3].map((_, i) => (
+          <div
+            key={i}
+            className="w-full max-w-2xl bg-white dark:bg-[#1a1a1a] rounded-lg dark:border-[#2a2a2a] p-5"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                <div className="space-y-2">
+                  <Skeleton className="w-32 h-4 bg-gray-200 dark:bg-gray-700" />
+                  <Skeleton className="w-20 h-3 bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+              <Skeleton className="w-16 h-3 bg-gray-200 dark:bg-gray-700" />
+            </div>
+
+            {/* Title */}
+            <div className="mt-4">
+              <Skeleton className="w-3/4 h-5 bg-gray-200 dark:bg-gray-700" />
+            </div>
+
+            {/* Content */}
+            <div className="mt-3 space-y-2">
+              <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+              <Skeleton className="w-2/3 h-4 bg-gray-200 dark:bg-gray-700" />
+            </div>
+
+            {/* Image */}
+            <div className="mt-4">
+              <Skeleton className="w-full h-[260px] rounded-lg bg-gray-200 dark:bg-gray-700" />
+            </div>
+
+            {/* Footer */}
+            <div className="mt-4 flex items-center justify-between border-t border-gray-200 dark:border-[#2a2a2a] pt-4">
+              <div className="flex items-center gap-4">
+                <Skeleton className="w-12 h-4 bg-gray-200 dark:bg-gray-700" />
+                <Skeleton className="w-12 h-4 bg-gray-200 dark:bg-gray-700" />
+              </div>
+              <Skeleton className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-md" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -42,7 +91,6 @@ export default function Home() {
         {blogData?.data?.map((post: Blog, index: number) => {
           const rawComments = post.comments ?? [];
 
-          // Separate top-level comments and replies using parentComment field
           const topLevel = rawComments.filter((c: any) => !c.parentComment);
           const replies = rawComments.filter((c: any) => !!c.parentComment);
 
@@ -52,7 +100,9 @@ export default function Home() {
             avatar: c.user?.profilePicture ?? "",
             handle: c.user?.userName ?? "",
             time: c.createdAt
-              ? formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })
+              ? formatDistanceToNow(new Date(c.createdAt), {
+                  addSuffix: true,
+                })
               : "",
             text: c.text ?? "",
             likes: c.likes?.length ?? 0,
@@ -64,7 +114,9 @@ export default function Home() {
                 avatar: r.user?.profilePicture ?? "",
                 handle: r.user?.userName ?? "",
                 time: r.createdAt
-                  ? formatDistanceToNow(new Date(r.createdAt), { addSuffix: true })
+                  ? formatDistanceToNow(new Date(r.createdAt), {
+                      addSuffix: true,
+                    })
                   : "",
                 text: r.text ?? "",
                 likes: r.likes?.length ?? 0,
@@ -84,14 +136,18 @@ export default function Home() {
               liked={
                 Array.isArray(post.likes) &&
                 Boolean(currentUserId) &&
-                post.likes.some((likedUserId: string) => likedUserId === currentUserId)
+                post.likes.some(
+                  (likedUserId: string) =>
+                    likedUserId === currentUserId
+                )
               }
               comments={post.comments?.length || 0}
               commentsData={commentsData}
               image={post.image?.[0]}
               video={post.audio?.[0]}
               locked={post.isLocked === true}
-              id={post._id}   // ✅ ADD THIS
+              id={post._id}
+              price={post.price}
             />
           );
         })}
