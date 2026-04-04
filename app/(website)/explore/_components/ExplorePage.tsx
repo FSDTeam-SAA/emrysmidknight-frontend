@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { StoryPost } from "@/components/home/StoryPost";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import type { Blog } from "@/types/type";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const categories = [
   "Fantasy",
@@ -22,57 +26,29 @@ const categories = [
   "Historicall",
 ];
 
-const dummyPosts = [
-  {
-    author: "Eleanor Pena",
-    handle: "oliverking",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eleanor",
-    timestamp: "2 hours ago",
-    title: "Dragon's Awakening – Chapter 5",
-    content: `The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.`,
-    likes: 27,
-    comments: 657,
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-    locked: true,
-  },
-  {
-    author: "Floyd Miles",
-    handle: "lilywhite",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd",
-    timestamp: "4 hours ago",
-    title: "The Shadow Kingdom – Chapter 1",
-    content: `The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.`,
-    likes: 27,
-    comments: 657,
-  },
-  {
-    author: "Dianne Russell",
-    handle: "noahsmith",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dianne",
-    timestamp: "2 hours ago",
-    title: "Crown of Fire – Chapter 4",
-    content: `In the kingdom of Emberfall...`,
-    likes: 42,
-    comments: 891,
-    video: "https://www.w3schools.com/html/mov_bbb.mp4",
-  },
-  {
-    author: "Marcus Rodriguez",
-    handle: "marcusauthor",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus",
-    timestamp: "8 hours ago",
-    title: "The Last Light – Chapter 2",
-    content: `As the sun began to set over the horizon...`,
-    likes: 19,
-    comments: 524,
-    image:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80",
-  },
-];
-
 export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState("Fantasy");
+  const { data: session, status } = useSession();
+  const token = session?.user?.accessToken;
+  const currentUserId = session?.user?.id;
+  const isLoggedIn = !!token;
+  const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+  const apiURL = isLoggedIn
+    ? `${baseURL}/blog/blogs-with-lock-status`
+    : `${baseURL}/blog`;
+
+  const { data: blogsData, isLoading } = useQuery({
+    queryKey: ["explore-blogs", activeCategory, isLoggedIn],
+    enabled: status !== "loading",
+    queryFn: async () => {
+      const url = `${apiURL}?category=${encodeURIComponent(activeCategory)}`;
+      const res = await fetch(url, {
+        headers: isLoggedIn ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Failed to fetch explore blogs");
+      return res.json();
+    },
+  });
 
   return (
     <div className="min-h-screen font-sans px-4">
@@ -112,22 +88,72 @@ export default function ExplorePage() {
 
       {/* Posts */}
       <div className="flex flex-col items-center gap-4 justify-center">
-        {dummyPosts.map((post, index) => (
+        {isLoading ? (
+          <>
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="w-full max-w-2xl bg-white dark:bg-[#1a1a1a] rounded-lg p-5"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                    <div className="space-y-2">
+                      <Skeleton className="w-32 h-4 bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="w-20 h-3 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  </div>
+                  <Skeleton className="w-16 h-3 bg-gray-200 dark:bg-gray-700" />
+                </div>
+
+                <div className="mt-4">
+                  <Skeleton className="w-3/4 h-5 bg-gray-200 dark:bg-gray-700" />
+                </div>
+
+                <div className="mt-3 space-y-2">
+                  <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+                  <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+                  <Skeleton className="w-2/3 h-4 bg-gray-200 dark:bg-gray-700" />
+                </div>
+
+                <div className="mt-4">
+                  <Skeleton className="w-full h-[260px] rounded-lg bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : null}
+
+        {!isLoading &&
+          (blogsData?.data ?? []).map((post: Blog) => (
           <StoryPost
-            key={index}
-            author={post.author}
-            handle={post.handle}
-            avatar={post.avatar}
-            timestamp={post.timestamp}
+            key={post._id}
+            author={post.author?.userName || "Unknown"}
+            handle={post.author?.userName || ""}
+            avatar={post.author?.profileImage || ""}
+            timestamp={post.createdAt}
             title={post.title}
             content={post.content}
-            likes={post.likes}
-            comments={post.comments}
-            image={post.image}
-            video={post.video}
-            locked={post.locked}
+            likes={post.likes?.length || 0}
+            liked={
+              Array.isArray(post.likes) &&
+              Boolean(currentUserId) &&
+              post.likes.some((likedUserId: string) => likedUserId === currentUserId)
+            }
+            comments={post.comments?.length || 0}
+            image={post.image?.[0]}
+            video={post.audio?.[0]}
+            locked={post.isLocked === true}
+            bookmarked={post.isBookmarked === true}
+            id={post._id}
+            price={post.price}
           />
-        ))}
+          ))}
+        {!isLoading && (blogsData?.data ?? []).length === 0 ? (
+          <p className="text-sm text-[#7D7D7D] dark:text-[#D7D7D7] py-6">
+            No posts found for this category.
+          </p>
+        ) : null}
       </div>
     </div>
   );
