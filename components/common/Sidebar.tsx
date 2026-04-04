@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 export const navigationItems = [
@@ -19,6 +19,9 @@ export const navigationItems = [
 export default function Sidebar() {
   const pathname = usePathname()
   const [logoutModalOpen, setLogoutModalOpen] = useState(false)
+  const session = useSession()
+  const role = session?.data?.user?.role
+ 
 
   const handleConfirmLogout = async () => {
     await signOut({ callbackUrl: '/' })
@@ -28,6 +31,7 @@ export default function Sidebar() {
     <div className="w-full min-h-screen mt-8">
       <nav className="space-y-4">
         {navigationItems.map((item) => {
+          if (item.href === '/dashboard' && role !== 'author') return null
           const Icon = item.icon
           const isActive = pathname === item.href
 
