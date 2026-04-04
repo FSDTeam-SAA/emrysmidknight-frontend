@@ -1,163 +1,187 @@
 "use client";
 
 import { StoryPost } from "@/components/home/StoryPost";
-import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { useMemo, useState } from "react";
+import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Tab = "single" | "author";
 
 interface SubscriptionRow {
-  id: number;
+  id: string;
   author: string;
   plan: string;
   amount: string;
   date: string;
 }
 
-const subscriptions: SubscriptionRow[] = [
-  {
-    id: 1,
-    author: "Jenny Wilson",
-    plan: "All Access",
-    amount: "€90",
-    date: "24 May, 2020",
-  },
-  {
-    id: 2,
-    author: "Ronald Richards",
-    plan: "Limited Post Access",
-    amount: "€30",
-    date: "21 Sep, 2020",
-  },
-  {
-    id: 3,
-    author: "Devon Lane",
-    plan: "Selected Post Access",
-    amount: "€50",
-    date: "8 Sep, 2020",
-  },
-  {
-    id: 4,
-    author: "Kathryn Murphy",
-    plan: "Limited Post Access",
-    amount: "€30",
-    date: "21 Sep, 2020",
-  },
-  {
-    id: 5,
-    author: "Darrell Steward",
-    plan: "All Access",
-    amount: "€90",
-    date: "22 Oct, 2020",
-  },
-  {
-    id: 6,
-    author: "Robert Fox",
-    plan: "Selected Post Access",
-    amount: "€50",
-    date: "17 Oct, 2020",
-  },
-  {
-    id: 7,
-    author: "Kristin Watson",
-    plan: "All Access",
-    amount: "€90",
-    date: "24 May, 2020",
-  },
-  {
-    id: 8,
-    author: "Brooklyn Simmons",
-    plan: "Selected Post Access",
-    amount: "€50",
-    date: "24 May, 2020",
-  },
-  {
-    id: 9,
-    author: "Jane Cooper",
-    plan: "All Access",
-    amount: "€90",
-    date: "17 Oct, 2020",
-  },
-  {
-    id: 10,
-    author: "Jenny Wilson",
-    plan: "All Access",
-    amount: "€90",
-    date: "24 May, 2020",
-  },
-  {
-    id: 11,
-    author: "Ronald Richards",
-    plan: "Limited Post Access",
-    amount: "€30",
-    date: "21 Sep, 2020",
-  },
-  {
-    id: 12,
-    author: "Devon Lane",
-    plan: "Selected Post Access",
-    amount: "€50",
-    date: "8 Sep, 2020",
-  },
-  {
-    id: 13,
-    author: "Kathryn Murphy",
-    plan: "Limited Post Access",
-    amount: "€30",
-    date: "21 Sep, 2020",
-  },
-];
+type PaymentUser = {
+  _id?: string;
+  fullName?: string;
+  userName?: string;
+  profilePicture?: string;
+};
 
-const dummyPosts = [
-  {
-    author: "Eleanor Pena",
-    handle: "oliverking",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Eleanor",
-    timestamp: "2 hours ago",
-    title: "Dragon's Awakening – Chapter 5",
-    content: `The mountains had always been quiet, their peaks covered with mist and ancient snow. But tonight the ground trembled beneath Mira's feet. A deep roar echoed through the valley as cracks of fire lit the sky. The villagers ran, but Mira stood still — she had been waiting for this moment her entire life.`,
-    likes: 27,
-    comments: 657,
-    image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-  },
-  {
-    author: "Floyd Miles",
-    handle: "lilywhite",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Floyd",
-    timestamp: "4 hours ago",
-    title: "The Dark Forest – Chapter 1",
-    content: `The night was silent, and the wind whispered through the trees. Shadows danced around the ancient ruins, hiding secrets long forgotten. Jonathan stepped cautiously, the crunch of fallen leaves beneath his boots echoing in the empty forest. He felt a chill run down his spine as the moonlight flickered through the canopy. Somewhere in the distance, a branch snapped. He froze.`,
-    likes: 15,
-    comments: 342,
-    // no image/video — text only
-  },
-  {
-    author: "Sarah Chen",
-    handle: "sarahwrites",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-    timestamp: "6 hours ago",
-    title: "Lost in the City – A Short Story",
-    content: `The rain poured down on the grey streets of downtown. Maya clutched her journal close to her chest, wondering if she had made the right decision to leave everything behind.`,
-    likes: 42,
-    comments: 891,
-    video: "https://www.w3schools.com/html/mov_bbb.mp4", // example video
-  },
-  {
-    author: "Marcus Rodriguez",
-    handle: "marcusauthor",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus",
-    timestamp: "8 hours ago",
-    title: "The Last Light – Chapter 2",
-    content: `As the sun began to set over the horizon, painting the sky in shades of amber and crimson, Elena understood what it meant to lose everything. The village below was silent now, the smoke from the fires finally clearing.`,
-    likes: 19,
-    comments: 524,
-    image:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&q=80",
-  },
-];
+type PaymentBlog = {
+  _id?: string;
+  title?: string;
+  content?: string;
+  image?: string[];
+  audio?: string[];
+  likes?: string[];
+  comments?: string[] | unknown[];
+  author?: PaymentUser | string;
+  createdAt?: string;
+  price?: number;
+};
+
+type PaymentItem = {
+  _id: string;
+  blog?: PaymentBlog;
+  paymentType?: string;
+  amount?: number;
+  createdAt?: string;
+};
+
+type PaymentsResponse = {
+  data?: {
+    meta?: {
+      page: number;
+      limit: number;
+      total: number;
+    };
+    data?: PaymentItem[];
+  };
+};
+
+type UserResponse = {
+  data?: {
+    _id?: string;
+    fullName?: string;
+    userName?: string;
+    profilePicture?: string;
+  };
+};
 
 export default function SubscriptionManagement() {
   const [activeTab, setActiveTab] = useState<Tab>("single");
+  const session = useSession();
+  const TOKEN = session?.data?.user?.accessToken || "";
+
+  const { data: payments = [], isLoading } = useQuery({
+    queryKey: ["blogAndAuthorData"],
+    queryFn: async () => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/payment/my-payments?paymentType=blog`,
+        {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        },
+      );
+      if (!res.ok) throw new Error("Failed to fetch subscriptions");
+      const result: PaymentsResponse = await res.json();
+      return result?.data?.data ?? [];
+    },
+    enabled: !!TOKEN,
+  });
+
+  const singlePostPayments = useMemo(
+    () =>
+      payments.filter(
+        (payment) =>
+          payment.paymentType === "blog" &&
+          payment.blog &&
+          payment.blog._id,
+      ),
+    [payments],
+  );
+
+  const authorIds = useMemo(() => {
+    const ids = new Set<string>();
+    payments.forEach((payment) => {
+      const authorField = payment.blog?.author;
+      const authorId =
+        typeof authorField === "string" ? authorField : authorField?._id;
+      if (authorId) ids.add(authorId);
+    });
+    return Array.from(ids);
+  }, [payments]);
+
+  const { data: authorInfoMap = {} } = useQuery({
+    queryKey: ["subscription-authors", authorIds],
+    queryFn: async () => {
+      if (authorIds.length === 0) return {} as Record<string, PaymentUser>;
+
+      const entries = await Promise.all(
+        authorIds.map(async (authorId) => {
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/${authorId}`,
+          );
+          if (!res.ok) return [authorId, {} as PaymentUser] as const;
+          const result: UserResponse = await res.json();
+          return [authorId, (result?.data ?? {}) as PaymentUser] as const;
+        }),
+      );
+
+      return entries.reduce<Record<string, PaymentUser>>((acc, [id, user]) => {
+        acc[id] = user;
+        return acc;
+      }, {});
+    },
+    enabled: authorIds.length > 0,
+  });
+
+  const authorRows = useMemo(() => {
+    const rowsMap = new Map<string, SubscriptionRow>();
+
+    payments.forEach((payment) => {
+      const blogAuthor = payment.blog?.author;
+      const authorId =
+        typeof blogAuthor === "string" ? blogAuthor : blogAuthor?._id;
+      const authorNameRaw =
+        typeof blogAuthor === "string"
+          ? (authorInfoMap[blogAuthor]?.fullName ||
+            authorInfoMap[blogAuthor]?.userName ||
+            "")
+          : blogAuthor?.fullName || blogAuthor?.userName || "";
+      const authorName = authorNameRaw || "Unknown Author";
+
+      if (!authorId) return;
+
+      const amount = Number(payment.amount || 0);
+      const dateText = payment.createdAt
+        ? format(new Date(payment.createdAt), "d MMM, yyyy")
+        : "-";
+
+      const existing = rowsMap.get(authorId);
+      if (existing) {
+        const existingAmount = Number(existing.amount.replace("$", "")) || 0;
+        const totalAmount = existingAmount + amount;
+        rowsMap.set(authorId, {
+          ...existing,
+          amount: `$${totalAmount.toFixed(2)}`,
+          date: dateText,
+        });
+        return;
+      }
+
+      rowsMap.set(authorId, {
+        id: authorId,
+        author: authorName,
+        plan:
+          payment.paymentType === "subscription"
+            ? "Author Subscription"
+            : "Single Post Access",
+        amount: `$${amount.toFixed(2)}`,
+        date: dateText,
+      });
+    });
+
+    return Array.from(rowsMap.values());
+  }, [payments, authorInfoMap]);
 
   return (
     <div className="min-h-screen px-4">
@@ -211,7 +235,20 @@ export default function SubscriptionManagement() {
 
             {/* Table Rows */}
             <div className="divide-y dark:divide-[#5E5E5E] divide-[#D7D7D7]">
-              {subscriptions.map((row) => (
+              {isLoading
+                ? [1, 2, 3].map((item) => (
+                    <div
+                      key={item}
+                      className="grid grid-cols-4 px-6 py-5 items-start"
+                    >
+                      <Skeleton className="h-4 w-24 bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="h-4 w-20 mx-auto bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="h-4 w-16 mx-auto bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="h-4 w-20 ml-auto bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  ))
+                : null}
+              {authorRows.map((row) => (
                 <div
                   key={row.id}
                   className="grid grid-cols-4 px-6 py-5 items-start hover:bg-[#FFFFFF0D] transition-colors"
@@ -237,21 +274,61 @@ export default function SubscriptionManagement() {
         {/* Single Post placeholder */}
         {activeTab === "single" && (
           <div className="rounded-2xl text-start text-[#5E5E6A] mb-4 text-sm flex flex-col gap-6">
-            {dummyPosts.map((post, index) => (
+            {isLoading
+              ? [1, 2].map((item) => (
+                  <div
+                    key={item}
+                    className="w-full max-w-2xl bg-white dark:bg-[#1a1a1a] rounded-lg p-5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Skeleton className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700" />
+                        <div className="space-y-2">
+                          <Skeleton className="w-32 h-4 bg-gray-200 dark:bg-gray-700" />
+                          <Skeleton className="w-20 h-3 bg-gray-200 dark:bg-gray-700" />
+                        </div>
+                      </div>
+                      <Skeleton className="w-16 h-3 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                    <div className="mt-4">
+                      <Skeleton className="w-3/4 h-5 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                    <div className="mt-3 space-y-2">
+                      <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="w-full h-4 bg-gray-200 dark:bg-gray-700" />
+                      <Skeleton className="w-2/3 h-4 bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                    <div className="mt-4">
+                      <Skeleton className="w-full h-[260px] rounded-lg bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  </div>
+                ))
+              : null}
+            {singlePostPayments.map((payment) => {
+              const blog = payment.blog!;
+                const author =
+                  typeof blog.author === "string"
+                  ? (authorInfoMap[blog.author] ?? undefined)
+                  : blog.author;
+              return (
               <StoryPost
-                key={index}
-                author={post.author}
-                handle={post.handle}
-                avatar={post.avatar}
-                timestamp={post.timestamp}
-                title={post.title}
-                content={post.content}
-                likes={post.likes}
-                comments={post.comments}
-                image={post.image}
-                video={post.video}
+                key={payment._id}
+                author={author?.fullName || author?.userName || "Unknown"}
+                handle={author?.userName || "author"}
+                avatar={author?.profilePicture || ""}
+                timestamp={blog.createdAt || payment.createdAt || new Date().toISOString()}
+                title={blog.title || "Untitled"}
+                content={blog.content || ""}
+                likes={blog.likes?.length || 0}
+                comments={Array.isArray(blog.comments) ? blog.comments.length : 0}
+                image={blog.image?.[0]}
+                video={blog.audio?.[0]}
+                locked={false}
+                id={blog._id}
+                price={blog.price || payment.amount || 0}
               />
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
