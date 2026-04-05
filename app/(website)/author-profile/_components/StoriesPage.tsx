@@ -357,6 +357,7 @@ export default function StoriesPage() {
                       <StoryPost
                         key={story._id}
                         id={story._id}
+                        authorId={story.author?._id || authorId}
                         author={storyAuthor}
                         handle={storyHandle}
                         avatar={storyAvatar}

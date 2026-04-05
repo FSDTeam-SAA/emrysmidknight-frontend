@@ -21,14 +21,6 @@ type RegisterResponse = {
   };
 };
 
-type StripeAccountResponse = {
-  success?: boolean;
-  message?: string;
-  data?: {
-    url?: string;
-  };
-  url?: string;
-};
 
 const inputClass =
   "w-full h-[50px] px-4 text-base bg-transparent text-[#2C2C2C] border border-[#7D7D7D] rounded-[4px] outline-none placeholder:text-[#ADADAD] focus:border-[#F66F7D] focus:ring-1 focus:ring-[#F66F7D] transition-colors";
@@ -88,21 +80,6 @@ export default function SignUpForm() {
 
   const router = useRouter();
 
-  const getValidStripeUrl = (payload: StripeAccountResponse | null) => {
-    const candidate =
-      payload?.data?.url ||
-      payload?.url ||
-      ((payload?.data as { data?: { url?: string } } | undefined)?.data?.url ??
-        "");
-
-    if (!candidate) return null;
-    try {
-      return new URL(candidate).toString();
-    } catch {
-      return null;
-    }
-  };
-
   const signupMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(
@@ -136,48 +113,6 @@ export default function SignUpForm() {
     onSuccess: async (data) => {
       console.log("✅ Signup success:", data);
       toast.success("Account created successfully!");
-
-      const createdUser = data?.data;
-      const isAuthor = createdUser?.role?.toLowerCase() === "author";
-      const hasStripeAccountId = Boolean(createdUser?.stripeAccountId);
-
-      if (isAuthor && !hasStripeAccountId && createdUser?.email) {
-        try {
-          const stripeRes = await fetch(
-            `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/stripe-account`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                // "Authorization": `Bearer ${}`,
-              },
-              body: JSON.stringify({ email: createdUser.email }),
-            },
-          );
-
-          const stripeData: StripeAccountResponse | null = await stripeRes
-            .json()
-            .catch(() => null);
-          console.log("Stripe account API response:", {
-            status: stripeRes.status,
-            ok: stripeRes.ok,
-            body: stripeData,
-          });
-          const stripeUrl = getValidStripeUrl(stripeData);
-
-          if (stripeRes.ok && stripeUrl) {
-            window.location.replace(stripeUrl);
-            return;
-          }
-
-          console.error("❌ Stripe account API did not return a valid URL:", {
-            status: stripeRes.status,
-            body: stripeData,
-          });
-        } catch (error) {
-          console.error("❌ Stripe redirect error:", error);
-        }
-      }
 
       router.push("/signin");
     },

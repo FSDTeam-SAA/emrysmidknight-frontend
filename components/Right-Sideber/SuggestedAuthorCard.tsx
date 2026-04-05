@@ -136,6 +136,9 @@ export function SuggestedAuthorSection() {
   const token = session?.data?.user?.accessToken || "";
   const isLoggedIn = Boolean(token);
 
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_VISIBLE = 4;
+
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   const [followingRecordMap, setFollowingRecordMap] = useState<Record<string, string>>({});
   const [followersDeltaMap, setFollowersDeltaMap] = useState<Record<string, number>>({});
@@ -276,6 +279,8 @@ export function SuggestedAuthorSection() {
     followMutation.mutate({ authorId, followerRecordId, isAlreadyFollowing });
   };
 
+  const visibleAuthors = showAll ? authors : authors.slice(0, INITIAL_VISIBLE);
+
   return (
     <div className="space-y-4">
       <h2 className="dark:text-white text-[#121212] text-xl sm:text-2xl lg:text-[28px] font-medium mb-6 sm:mb-8 lg:mb-5">
@@ -286,7 +291,7 @@ export function SuggestedAuthorSection() {
         
         {/* ✅ Skeleton */}
         {isLoading &&
-          [1, 2, 3].map((_, i) => (
+          [1, 2, 3, 4].map((_, i) => (
             <div
               key={i}
               className="flex items-center justify-between p-3 sm:p-4"
@@ -316,7 +321,7 @@ export function SuggestedAuthorSection() {
 
         {!isLoading &&
           !isError &&
-          authors.map((author) => {
+          visibleAuthors.map((author) => {
             const baseFollowers =
               typeof author.followersReadersCount === "number"
                 ? author.followersReadersCount
@@ -340,6 +345,16 @@ export function SuggestedAuthorSection() {
             );
           })}
       </div>
+
+      {!isLoading && !isError && authors.length > INITIAL_VISIBLE && (
+        <button
+          type="button"
+          onClick={() => setShowAll((prev) => !prev)}
+          className="w-full rounded-lg border border-[#D7D7D7] dark:border-[#2C2C2C] bg-[#FFFFFF] dark:bg-[#FFFFFF0D] py-2 text-sm font-medium text-[#121212] dark:text-white transition-colors hover:bg-[#F8F8F8] dark:hover:bg-[#1B1B1B]"
+        >
+          {showAll ? "Show less" : "See more"}
+        </button>
+      )}
     </div>
   );
 }

@@ -1,14 +1,23 @@
 
-import { TrendingUp } from 'lucide-react'
+import { TrendingDown, TrendingUp } from 'lucide-react'
 
 interface StatCardProps {
   label: string
   value: string
   change: string
   changeColor: string
+  direction?: 'up' | 'down'
 }
 
-export function StatCard({ label, value, change, changeColor }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  change,
+  changeColor,
+  direction = 'up',
+}: StatCardProps) {
+  const TrendIcon = direction === 'down' ? TrendingDown : TrendingUp
+
   return (
     <div className="bg-[#FFFFFF] dark:bg-[#FFFFFF0D]  rounded-[8px]  p-6 hover:bg-neutral-750 transition-colors ">
       <div className="flex flex-col space-y-4">
@@ -21,7 +30,7 @@ export function StatCard({ label, value, change, changeColor }: StatCardProps) {
           
           <div className={`flex items-center gap-1 ${changeColor} text-sm font-medium`}>
             <span>{change}</span>
-            <TrendingUp className="w-4 h-4" />
+            <TrendIcon className="w-4 h-4" />
           </div>
         </div>
       </div>

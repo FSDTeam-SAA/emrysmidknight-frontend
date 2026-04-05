@@ -146,10 +146,13 @@ export default function BookMarksPage() {
               typeof blog.author === "string"
                 ? authorInfoMap[blog.author]
                 : blog.author;
+            const authorId =
+              typeof blog.author === "string" ? blog.author : blog.author?._id;
 
             return (
               <StoryPost
                 key={item._id}
+                authorId={authorId || authorObj?._id}
                 author={authorObj?.fullName || authorObj?.userName || "Unknown"}
                 handle={authorObj?.userName || "author"}
                 avatar={authorObj?.profilePicture || ""}

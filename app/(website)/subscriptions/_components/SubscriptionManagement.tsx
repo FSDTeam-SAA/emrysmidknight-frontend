@@ -310,9 +310,12 @@ export default function SubscriptionManagement() {
                   typeof blog.author === "string"
                   ? (authorInfoMap[blog.author] ?? undefined)
                   : blog.author;
+                const authorId =
+                  typeof blog.author === "string" ? blog.author : blog.author?._id;
               return (
               <StoryPost
                 key={payment._id}
+                authorId={authorId || author?._id}
                 author={author?.fullName || author?.userName || "Unknown"}
                 handle={author?.userName || "author"}
                 avatar={author?.profilePicture || ""}

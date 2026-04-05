@@ -177,6 +177,7 @@ export default function Home() {
            
             <StoryPost
               key={index}
+              authorId={post.author?._id}
               author={post.author?.userName || "Unknown"}
               handle={post.author?.userName}
               avatar={post.author?.profilePicture || post.author?.profileImage || ""}

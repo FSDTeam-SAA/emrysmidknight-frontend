@@ -39,7 +39,7 @@ export default function MindButton({ avatarUrl, name }: MindButtonProps) {
               onClick={handleClick}
               className="w-full text-left h-14 sm:h-16 rounded-2xl px-4 sm:px-5 bg-white dark:bg-[#1b1b1b] border dark:border-white/20 dark:text-white/70 text-base sm:text-lg transition-all duration-200"
             >
-              What's on your mind?
+              What&lsquo;s on your mind?
             </button>
           </Link>
         </div>

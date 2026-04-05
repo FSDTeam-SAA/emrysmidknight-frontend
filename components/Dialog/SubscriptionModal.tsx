@@ -146,7 +146,7 @@ export function SubscriptionModal({ open, onClose, authorId }: SubscriptionModal
 
           {showLoginNotice ? (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Please login to view this author's subscription plans.
+              Please login to view this author&lsquo;s subscription plans.
             </div>
           ) : null}
 

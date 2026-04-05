@@ -1,11 +1,12 @@
 "use client";
 import { SubscriptionModal } from "@/components/Dialog/SubscriptionModal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 type AuthorProfile = {
   _id?: string;
@@ -48,6 +49,19 @@ type AuthorProfileData = {
   author?: AuthorProfile;
   stats?: AuthorProfileStats;
   viewer?: AuthorProfileViewer;
+};
+
+type MyFollowingItem = {
+  _id: string;
+  author?: {
+    _id?: string;
+  } | string;
+};
+
+type MyFollowingResponse = {
+  data?: {
+    data?: MyFollowingItem[];
+  };
 };
 
 const UnfollowIcon = () => (
@@ -112,27 +126,71 @@ export default function ProfileHeader() {
     enabled: !!authorId && !!token,
   });
 
+  const { data: followingByAuthorId = {} } = useQuery({
+    queryKey: ["my-followings", token],
+    queryFn: async () => {
+      if (!token) return {} as Record<string, string>;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/followers/my-followers?limit=200&page=1`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (!res.ok) return {} as Record<string, string>;
+      const result: MyFollowingResponse = await res.json();
+      const rows = result?.data?.data ?? [];
+      return rows.reduce<Record<string, string>>((acc, row) => {
+        const rowAuthorId =
+          typeof row.author === "string" ? row.author : row.author?._id;
+        if (rowAuthorId && row._id) {
+          acc[rowAuthorId] = row._id;
+        }
+        return acc;
+      }, {});
+    },
+    enabled: !!token,
+  });
+
   const [following, setFollowing] = useState(false);
+  const [followRecordId, setFollowRecordId] = useState<string | undefined>();
   const [subscribed, setSubscribed] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const viewer = profile?.viewer;
-    if (!viewer) return;
+    if (!viewer && !authorId) return;
 
-    const nextFollowing =
-      typeof viewer.isFollowing === "boolean"
+    const viewerFollowing =
+      typeof viewer?.isFollowing === "boolean"
         ? viewer.isFollowing
-        : viewer.followStatus === "follow";
+        : viewer?.followStatus === "follow";
+    const mappedFollowId = authorId ? followingByAuthorId[authorId] : undefined;
+    const nextFollowing = Boolean(mappedFollowId || viewerFollowing);
     const nextSubscribed =
-      typeof viewer.hasActiveSubscription === "boolean"
+      typeof viewer?.hasActiveSubscription === "boolean"
         ? viewer.hasActiveSubscription
-        : viewer.subscriptionStatus === "subscribed";
+        : viewer?.subscriptionStatus === "subscribed";
 
     setFollowing(nextFollowing);
     setSubscribed(nextSubscribed);
-  }, [profile?.viewer]);
+    if (mappedFollowId) {
+      setFollowRecordId(mappedFollowId);
+      return;
+    }
+    if (
+      viewer?.followAction &&
+      !["follow", "unfollow"].includes(viewer.followAction)
+    ) {
+      setFollowRecordId(viewer.followAction);
+    } else {
+      setFollowRecordId(undefined);
+    }
+  }, [profile?.viewer, followingByAuthorId, authorId]);
 
   const author = profile?.author;
   const displayName =
@@ -151,6 +209,79 @@ export default function ProfileHeader() {
 
   const handleSubscribeClick = () => {
     setSubscriptionModalOpen(true);
+  };
+
+  const followMutation = useMutation({
+    mutationFn: async ({
+      isAlreadyFollowing,
+      followerId,
+    }: {
+      isAlreadyFollowing: boolean;
+      followerId?: string;
+    }) => {
+      if (!token) throw new Error("Missing auth token");
+      if (!authorId) throw new Error("Missing author id");
+
+      const targetId = isAlreadyFollowing ? followerId || authorId : authorId;
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/followers/${targetId}`,
+        {
+          method: isAlreadyFollowing ? "DELETE" : "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const result = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(
+          result?.message ||
+            (isAlreadyFollowing
+              ? "Failed to unfollow author"
+              : "Failed to follow author"),
+        );
+      }
+
+      return { result, isAlreadyFollowing };
+    },
+    onSuccess: ({ result, isAlreadyFollowing }) => {
+      setFollowing(!isAlreadyFollowing);
+      if (isAlreadyFollowing) {
+        setFollowRecordId(undefined);
+      } else {
+        const newFollowerId = result?.data?._id;
+        if (newFollowerId) {
+          setFollowRecordId(newFollowerId);
+        }
+      }
+      toast.success(
+        result?.message ||
+          (isAlreadyFollowing
+            ? "Unfollowed successfully"
+            : "Followed successfully"),
+      );
+      queryClient.invalidateQueries({
+        queryKey: ["author-profile", authorId, token],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["my-followings", token],
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Request failed");
+    },
+  });
+
+  const handleFollowToggle = () => {
+    if (!token) {
+      toast.warning("Please login and continue.");
+      return;
+    }
+    followMutation.mutate({
+      isAlreadyFollowing: following,
+      followerId: followRecordId || (authorId ? followingByAuthorId[authorId] : undefined),
+    });
   };
 
   if (isLoading || status === "loading") {
@@ -216,11 +347,16 @@ export default function ProfileHeader() {
 
               {/* Unfollow / Follow */}
               <button
-                onClick={() => setFollowing(!following)}
-                className="flex items-center gap-1.5 px-4 h-[48px] rounded-[8px] border border-[#F66F7D] bg-transparent text-[#F66F7D] font-medium text-[16px] cursor-pointer hover:border-[#f47280] transition-all duration-150"
+                onClick={handleFollowToggle}
+                disabled={followMutation.isPending}
+                className="flex items-center gap-1.5 px-4 h-[48px] rounded-[8px] border border-[#F66F7D] bg-transparent text-[#F66F7D] font-medium text-[16px] cursor-pointer hover:border-[#f47280] transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 <UnfollowIcon />
-                {following ? "Unfollow" : "Follow"}
+                {followMutation.isPending
+                  ? "Processing..."
+                  : following
+                    ? "Unfollow"
+                    : "Follow"}
               </button>
 
               {/* Subscribe → opens modal */}
