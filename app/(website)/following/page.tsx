@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import FollowerCard from "./_components/Followercard";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type ApiUser = {
   _id?: string;
@@ -157,6 +158,7 @@ function FollowingSkeleton() {
 }
 
 export default function FollowingPage() {
+  const router = useRouter();
   const { data: session, status } = useSession();
   const token = session?.user?.accessToken;
   const isSessionLoading = status === "loading";
@@ -218,7 +220,7 @@ export default function FollowingPage() {
   });
 
   function handleViewProfile(user: FollowerCardItem) {
-    console.log("View profile →", user.handle);
+    router.push(`/author-profile/${user.id}`);
   }
 
   function handleUnfollow(followRecordId: string) {

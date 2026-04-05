@@ -150,7 +150,6 @@ export default function ProfileHeader() {
       : "/profile1.png";
 
   const handleSubscribeClick = () => {
-    // modal খোলে — subscribe state modal-এর Save Changes এ set হবে
     setSubscriptionModalOpen(true);
   };
 
@@ -273,9 +272,9 @@ export default function ProfileHeader() {
       {/* Subscription Plans Modal */}
       <SubscriptionModal
         open={subscriptionModalOpen}
+        authorId={authorId}
         onClose={() => {
           setSubscriptionModalOpen(false);
-          setSubscribed(true); // modal বন্ধ হলে subscribed হিসেবে mark হবে
         }}
       />
     </>

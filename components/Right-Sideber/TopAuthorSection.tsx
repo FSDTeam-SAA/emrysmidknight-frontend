@@ -4,12 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton"; // ✅ added
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 type TopAuthor = {
   _id: string;
   fullName?: string;
   userName: string;
   bio?: string;
+  profilePicture?: string;
   followersReaders?: string[];
   followersReadersCount?: number;
 };
@@ -27,6 +30,9 @@ type TopAuthorsResponse = {
 };
 
 export function TopAuthorSection() {
+  const { data: session } = useSession();
+  const isLoggedIn = Boolean(session?.user?.accessToken);
+
   const { data: authors = [], isLoading, isError } = useQuery({
     queryKey: ["top-authors"],
     queryFn: async () => {
@@ -91,16 +97,28 @@ export function TopAuthorSection() {
                 ? author.followersReadersCount
                 : author.followersReaders?.length || 0;
 
+            const profileSrc =
+              author.profilePicture && author.profilePicture.trim().length > 0
+                ? author.profilePicture
+                : "/Author.png";
+
             return (
               <Link
                 key={author._id}
                 href={`/author-profile/${author._id}`}
                 className="block"
+                onClick={(event) => {
+                  if (!isLoggedIn) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    toast.warning("Please login and continue.");
+                  }
+                }}
               >
                 <div className="flex items-center gap-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border border-[#D7D7D7] dark:border-[#2C2C2C] rounded-[8px]">
                   <div className="flex-shrink-0 w-20 h-20 sm:w-[102px] sm:h-[102px] relative overflow-hidden">
                     <Image
-                      src="/Author.png"
+                      src={profileSrc}
                       alt={displayName}
                       width={1000}
                       height={1000}

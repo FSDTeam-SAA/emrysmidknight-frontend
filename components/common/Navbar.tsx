@@ -16,14 +16,15 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 import Rightsideber from "@/components/common/Rightsideber";
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
-import { navigationItems } from "@/components/common/Sidebar";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SidebarMenu } from "@/components/common/Sidebar";
 import { useSession } from "next-auth/react";
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchTermFromUrl = searchParams.get("searchTerm") ?? "";
   const { data: session } = useSession();
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -40,6 +41,37 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    setSearchValue(searchTermFromUrl);
+  }, [searchTermFromUrl]);
+
+  useEffect(() => {
+    const normalizedValue = searchValue.trim();
+    const normalizedUrlValue = searchTermFromUrl.trim();
+
+    if (normalizedValue === normalizedUrlValue) return;
+
+    const timer = setTimeout(() => {
+      const params =
+        pathname === "/"
+          ? new URLSearchParams(searchParams.toString())
+          : new URLSearchParams();
+
+      if (normalizedValue) {
+        params.set("searchTerm", normalizedValue);
+      } else {
+        params.delete("searchTerm");
+      }
+
+      const query = params.toString();
+      const targetPath = pathname === "/" ? pathname : "/";
+
+      router.replace(query ? `${targetPath}?${query}` : targetPath);
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [searchValue, searchTermFromUrl, pathname, router, searchParams]);
 
   const handleIconClick = (icon: "bell" | "user") => {
     setActiveIcon(icon);
@@ -100,48 +132,26 @@ export default function Navbar() {
                       <input
                         placeholder="Search stories, authors..."
                         className="min-w-0 flex-1 bg-transparent text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none"
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
                       />
                     </div>
                   </div>
 
                   {/* Nav Links */}
-                  <nav className="flex flex-col gap-1 p-3">
-                    {navigationItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = pathname === item.href;
-
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
-                            isActive
-                              ? "bg-[#c9727a1f] text-[#c9727a]"
-                              : "text-gray-400 hover:bg-[#c9727a14] hover:text-[#c9727a]"
-                          }`}
-                        >
-                          <Icon
-                            size={17}
-                            className={`shrink-0 ${
-                              isActive ? "opacity-100" : "opacity-80"
-                            }`}
-                          />
-                          <span>{item.name}</span>
-                        </Link>
-                      );
-                    })}
-                  </nav>
+                  <SidebarMenu variant="sheet" className="p-3" />
                 </div>
 
-                {/* Footer Buttons */}
-                <div className="flex gap-2 border-t border-[#242424] p-4">
-                  <button className="flex-1 rounded-lg border border-[#333] px-3 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-[#222]">
-                    Sign in
-                  </button>
-                  <button className="flex-1 rounded-lg bg-[#c9727a] px-3 py-2.5 text-sm font-medium text-white transition hover:bg-[#b6616c]">
-                    Get started
-                  </button>
-                </div>
+                {!isLoggedIn && (
+                  <div className="flex gap-2 border-t border-[#242424] p-4">
+                    <button className="flex-1 rounded-lg border border-[#333] px-3 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-[#222]">
+                      Sign in
+                    </button>
+                    <button className="flex-1 rounded-lg bg-[#c9727a] px-3 py-2.5 text-sm font-medium text-white transition hover:bg-[#b6616c]">
+                      Get started
+                    </button>
+                  </div>
+                )}
               </SheetContent>
             </Sheet>
           </div>

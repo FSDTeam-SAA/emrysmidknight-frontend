@@ -8,11 +8,12 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import Image from "next/image";
 
-interface PaymentModalProps {
+interface SubscriptionPaymentModalProps {
   open: boolean;
   onClose: () => void;
-  blogId?: string;
+  planId?: string;
   amount?: number;
+  authorId?: string;
 }
 
 type PaymentMethod = {
@@ -60,7 +61,7 @@ const formatExpiry = (val: string) => {
   return digits;
 };
 
-export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProps) {
+export function SubscriptionPaymentModal({ open, onClose, planId, amount, authorId }: SubscriptionPaymentModalProps) {
   const { data: session } = useSession();
   const token = session?.user?.accessToken;
 
@@ -91,7 +92,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
   const paymentMutation = useMutation({
     mutationFn: async () => {
       if (!token) throw new Error("Please login first");
-      if (!blogId) throw new Error("Blog id not found");
+      if (!planId) throw new Error("Plan id not found");
 
       if (selectedMethod === "manual") {
         if (!cardNumber || !expiry || !cvv || !nameOnCard) {
@@ -102,7 +103,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
       const payload = selectedMethod === "manual" ? {} : { savedMethodId: selectedMethod };
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/payment/unlock-blog/${blogId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/payment/subscribe/${planId}`,
         {
           method: "POST",
           headers: {
@@ -115,18 +116,21 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
 
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error(data?.message || "Payment request failed");
+        throw new Error(data?.message || "Subscription payment request failed");
       }
 
       return data;
     },
     onSuccess: (data) => {
-      toast.success(data?.message || "Payment request created successfully");
-      queryClient.invalidateQueries({ queryKey: ["blogData"] });
+      toast.success(data?.message || "Subscription request created successfully");
+      queryClient.invalidateQueries({ queryKey: ["author-profile"] });
+      if (authorId) {
+        queryClient.invalidateQueries({ queryKey: ["author-subscriptions", authorId] });
+      }
       onClose();
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Payment failed");
+      toast.error(error.message || "Subscription payment failed");
     },
   });
 
@@ -169,7 +173,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
               onChange={(e) => {
                 if (hasTextCharacter(e.target.value)) {
                   toast.warning("Card number field accepts numbers only.", {
-                    id: "payment-number-only-card",
+                    id: "subscription-number-only-card",
                   });
                 }
                 setCardNumber(formatCardNumber(e.target.value));
@@ -189,7 +193,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
                 onChange={(e) => {
                   if (hasTextCharacter(e.target.value)) {
                     toast.warning("Expiry field accepts numbers only.", {
-                      id: "payment-number-only-expiry",
+                      id: "subscription-number-only-expiry",
                     });
                   }
                   setExpiry(formatExpiry(e.target.value));
@@ -207,7 +211,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
                 onChange={(e) => {
                   if (hasTextCharacter(e.target.value)) {
                     toast.warning("CVV field accepts numbers only.", {
-                      id: "payment-number-only-cvv",
+                      id: "subscription-number-only-cvv",
                     });
                   }
                   setCvv(normalizeDigits(e.target.value).replace(/\D/g, "").slice(0, 3));
@@ -304,7 +308,7 @@ export function PaymentModal({ open, onClose, blogId, amount }: PaymentModalProp
               }
               paymentMutation.mutate();
             }}
-            disabled={paymentMutation.isPending || !blogId}
+            disabled={paymentMutation.isPending || !planId}
             className="w-full h-[50px] bg-[#F66F7D] text-white text-[16px] font-bold rounded-xl mb-3.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {paymentMutation.isPending ? "Processing..." : `Pay $${resolvedAmount.toFixed(2)}`}

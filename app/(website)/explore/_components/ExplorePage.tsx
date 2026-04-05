@@ -130,7 +130,7 @@ export default function ExplorePage() {
             key={post._id}
             author={post.author?.userName || "Unknown"}
             handle={post.author?.userName || ""}
-            avatar={post.author?.profileImage || ""}
+            avatar={post.author?.profilePicture || post.author?.profileImage || ""}
             timestamp={post.createdAt}
             title={post.title}
             content={post.content}

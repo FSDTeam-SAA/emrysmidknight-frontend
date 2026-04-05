@@ -4,7 +4,8 @@ export interface Author {
   userName: string;
   email: string;
   bio: string;
-  profileImage?: string; // ← this matches API
+  profilePicture?: string;
+  profileImage?: string; // legacy fallback
   // ...other fields
 }
 
