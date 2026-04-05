@@ -128,9 +128,10 @@ export default function ExplorePage() {
           (blogsData?.data ?? []).map((post: Blog) => (
           <StoryPost
             key={post._id}
+            authorId={post.author?._id}
             author={post.author?.userName || "Unknown"}
             handle={post.author?.userName || ""}
-            avatar={post.author?.profileImage || ""}
+            avatar={post.author?.profilePicture || post.author?.profileImage || ""}
             timestamp={post.createdAt}
             title={post.title}
             content={post.content}

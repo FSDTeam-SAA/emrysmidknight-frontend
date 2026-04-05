@@ -7,22 +7,74 @@ import { Blog } from "@/types/type";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { formatRelativeTime } from "@/lib/date";
-import { Skeleton } from "@/components/ui/skeleton"; // ✅ added
+import { Skeleton } from "@/components/ui/skeleton"; 
+import { useSearchParams } from "next/navigation";
+import MindButton from "@/components/home/MindButton";
+
+type UserProfile = {
+  fullName?: string;
+  userName?: string;
+  profilePicture?: string;
+  profileImage?: string;
+  avatar?: string;
+};
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const searchTerm = (searchParams.get("searchTerm") ?? "").trim();
+  const role = session?.user?.role;
+  const isAuthor = typeof role === "string" && role.toLowerCase() === "author";
 
   const token = session?.user?.accessToken;
   const currentUserId = session?.user?.id;
   const isLoggedIn = !!token;
   const baseURL = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 
-  const apiURL = isLoggedIn
+  const baseApiURL = isLoggedIn
     ? `${baseURL}/blog/blogs-with-lock-status`
     : `${baseURL}/blog`;
+  const apiParams = new URLSearchParams();
+  if (searchTerm) apiParams.set("searchTerm", searchTerm);
+  const apiURL = apiParams.toString()
+    ? `${baseApiURL}?${apiParams.toString()}`
+    : baseApiURL;
+
+  const { data: profile } = useQuery<UserProfile>({
+    queryKey: ["user-profile"],
+    enabled: isAuthor && !!token,
+    queryFn: async () => {
+      if (!token) throw new Error("Missing auth token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/profile`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(result?.message || "Failed to fetch profile");
+      }
+      return (result?.data ?? result) as UserProfile;
+    },
+  });
+
+  const avatarUrl =
+    profile?.profilePicture ||
+    profile?.profileImage ||
+    profile?.avatar ||
+    "";
+  const displayName =
+    profile?.fullName ||
+    profile?.userName ||
+    session?.user?.fullName ||
+    session?.user?.userName ||
+    "User";
 
   const { data: blogData, isLoading } = useQuery({
-    queryKey: ["blogData", isLoggedIn],
+    queryKey: ["blogData", isLoggedIn, searchTerm],
     enabled: status !== "loading",
     queryFn: async () => {
       const res = await fetch(apiURL, {
@@ -88,6 +140,7 @@ export default function Home() {
   return (
     <div className="py-8">
       <div className="flex flex-col items-center gap-4 justify-center px-0 lg:px-4">
+        {isAuthor ? <MindButton avatarUrl={avatarUrl} name={displayName} /> : null}
         {blogData?.data?.map((post: Blog, index: number) => {
           const rawComments = post.comments ?? [];
 
@@ -120,11 +173,14 @@ export default function Home() {
           }));
 
           return (
+            <>
+           
             <StoryPost
               key={index}
+              authorId={post.author?._id}
               author={post.author?.userName || "Unknown"}
               handle={post.author?.userName}
-              avatar={post.author?.profileImage || ""}
+              avatar={post.author?.profilePicture || post.author?.profileImage || ""}
               timestamp={post.createdAt}
               title={post.title}
               content={post.content}
@@ -150,6 +206,7 @@ export default function Home() {
               price={post.price}
               audienceType ={post.audienceType}
             />
+            </>
           );
         })}
       </div>

@@ -14,6 +14,7 @@ type SuggestedAuthor = {
   fullName?: string;
   userName: string;
   bio?: string;
+  profilePicture?: string;
   followersReaders?: string[];
   followersReadersCount?: number;
 };
@@ -48,6 +49,7 @@ interface SuggestedAuthorCardProps {
   followersCount: number;
   isFollowing: boolean;
   isPending: boolean;
+  isLoggedIn: boolean;
   onFollow: (author: SuggestedAuthor) => void;
 }
 
@@ -56,6 +58,7 @@ export function SuggestedAuthorCard({
   followersCount,
   isFollowing,
   isPending,
+  isLoggedIn,
   onFollow,
 }: SuggestedAuthorCardProps) {
   const displayName =
@@ -63,15 +66,27 @@ export function SuggestedAuthorCard({
       ? author.fullName
       : author.userName;
 
+  const profileSrc =
+    author.profilePicture && author.profilePicture.trim().length > 0
+      ? author.profilePicture
+      : "/profile.png";
+
   return (
     <div className="flex items-center justify-between p-3 sm:p-4 hover:border-slate-300 transition-colors">
       <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
         <Link
           href={`/author-profile/${author._id}`}
           className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0"
+          onClick={(event) => {
+            if (!isLoggedIn) {
+              event.preventDefault();
+              event.stopPropagation();
+              toast.warning("Please login and continue.");
+            }
+          }}
         >
           <Image
-            src="/profile.png"
+            src={profileSrc}
             alt={displayName}
             fill
             className="rounded-full object-cover"
@@ -79,7 +94,16 @@ export function SuggestedAuthorCard({
         </Link>
 
         <div className="min-w-0 flex-1">
-          <Link href={`/author-profile/${author._id}`}>
+          <Link
+            href={`/author-profile/${author._id}`}
+            onClick={(event) => {
+              if (!isLoggedIn) {
+                event.preventDefault();
+                event.stopPropagation();
+                toast.warning("Please login and continue.");
+              }
+            }}
+          >
             <h3 className="font-medium text-[20px] sm:text-xl text-[#121212] dark:text-[#FFFFFF] truncate">
               {displayName}
             </h3>
@@ -110,6 +134,10 @@ export function SuggestedAuthorSection() {
   const queryClient = useQueryClient();
   const session = useSession();
   const token = session?.data?.user?.accessToken || "";
+  const isLoggedIn = Boolean(token);
+
+  const [showAll, setShowAll] = useState(false);
+  const INITIAL_VISIBLE = 4;
 
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
   const [followingRecordMap, setFollowingRecordMap] = useState<Record<string, string>>({});
@@ -123,13 +151,15 @@ export function SuggestedAuthorSection() {
   } = useQuery({
     queryKey: ["suggested-authors"],
     queryFn: async () => {
+      const headers: HeadersInit = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/?role=author`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         },
       );
       if (!res.ok) throw new Error("Failed to fetch suggested authors");
@@ -237,6 +267,10 @@ export function SuggestedAuthorSection() {
   };
 
   const handleFollow = (author: SuggestedAuthor) => {
+    if (!isLoggedIn) {
+      toast.warning("Please login and continue.");
+      return;
+    }
     const authorId = author._id;
     const isAlreadyFollowing = isAuthorFollowing(author);
     const followerRecordId =
@@ -244,6 +278,8 @@ export function SuggestedAuthorSection() {
     setPendingAuthorId(authorId);
     followMutation.mutate({ authorId, followerRecordId, isAlreadyFollowing });
   };
+
+  const visibleAuthors = showAll ? authors : authors.slice(0, INITIAL_VISIBLE);
 
   return (
     <div className="space-y-4">
@@ -255,7 +291,7 @@ export function SuggestedAuthorSection() {
         
         {/* ✅ Skeleton */}
         {isLoading &&
-          [1, 2, 3].map((_, i) => (
+          [1, 2, 3, 4].map((_, i) => (
             <div
               key={i}
               className="flex items-center justify-between p-3 sm:p-4"
@@ -285,7 +321,7 @@ export function SuggestedAuthorSection() {
 
         {!isLoading &&
           !isError &&
-          authors.map((author) => {
+          visibleAuthors.map((author) => {
             const baseFollowers =
               typeof author.followersReadersCount === "number"
                 ? author.followersReadersCount
@@ -303,11 +339,22 @@ export function SuggestedAuthorSection() {
                 isPending={
                   pendingAuthorId === author._id && followMutation.isPending
                 }
+                isLoggedIn={isLoggedIn}
                 onFollow={handleFollow}
               />
             );
           })}
       </div>
+
+      {!isLoading && !isError && authors.length > INITIAL_VISIBLE && (
+        <button
+          type="button"
+          onClick={() => setShowAll((prev) => !prev)}
+          className="w-full rounded-lg border border-[#D7D7D7] dark:border-[#2C2C2C] bg-[#FFFFFF] dark:bg-[#FFFFFF0D] py-2 text-sm font-medium text-[#121212] dark:text-white transition-colors hover:bg-[#F8F8F8] dark:hover:bg-[#1B1B1B]"
+        >
+          {showAll ? "Show less" : "See more"}
+        </button>
+      )}
     </div>
   );
 }

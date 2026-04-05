@@ -3,13 +3,12 @@
 import {
   MessageCircle,
   Bookmark,
-  MoreHorizontal,
   ThumbsUp,
 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { UnlockDialog } from "../Dialog/UnlockDialog";
 import { CommentModal } from "../Dialog/CommentModal";
 import { formatRelativeTime } from "@/lib/date";
@@ -56,6 +55,7 @@ interface StoryPostProps {
   id?: string;
   price?: number;
   audienceType?: "free" | "paid";
+  authorId?: string;
 }
 
 const MAX_CHARS = 220;
@@ -77,6 +77,7 @@ export function StoryPost({
   liked = false,
   id,
   price,
+  authorId,
 }: StoryPostProps) {
   const [expanded, setExpanded] = useState(false);
   const [isLiked, setIsLiked] = useState(liked);
@@ -170,10 +171,23 @@ export function StoryPost({
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5">
           <div className="flex items-center gap-3">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={avatar} alt={author} />
-              <AvatarFallback>{author.charAt(0)}</AvatarFallback>
-            </Avatar>
+            {authorId ? (
+              <Link
+                href={`/author-profile/${authorId}`}
+                className="flex items-center hover:opacity-90 transition-opacity"
+                aria-label={`View ${author} profile`}
+              >
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src={avatar} alt={author} />
+                  <AvatarFallback>{author.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </Link>
+            ) : (
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={avatar} alt={author} />
+                <AvatarFallback>{author.charAt(0)}</AvatarFallback>
+              </Avatar>
+            )}
             <div className="flex flex-col">
               <h3 className="text-base font-semibold text-[#121212] dark:text-white leading-5">
                 {author}
@@ -185,13 +199,13 @@ export function StoryPost({
             <span className="text-sm text-[#121212] dark:text-[#D7D7D7]">
               {timestampLabel}
             </span>
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-[#121212] dark:text-[#8c8c8c]"
             >
               <MoreHorizontal className="w-6 h-6 dark:text-[#D7D7D7]" />
-            </Button>
+            </Button> */}
           </div>
         </div>
 

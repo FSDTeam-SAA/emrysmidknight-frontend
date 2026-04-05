@@ -18,7 +18,7 @@ export function TrendingStoryItem({ story }: { story: Story }) {
     <div className="!p-4 bg-[#FFFFFF] dark:bg-[#FFFFFF0D] border dark:!border-[#2C2C2C] rounded-[8px] cursor-pointer">
       <div className="flex gap-4 items-start">
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-[#121212] dark:text-white text-base sm:text-lg lg:text-[24px]">
+          <h3 className="font-medium text-[#121212] dark:text-white text-base sm:text-lg lg:text-[22px]">
             {story.title}
           </h3>
           <div className="flex items-center gap-1 mt-2 text-xs sm:text-sm text-[#7D7D7D] dark:text-[#D7D7D7]">

@@ -3,6 +3,7 @@
 import { SuggestedAuthorSection } from "../Right-Sideber/SuggestedAuthorCard";
 import { TopAuthorSection } from "../Right-Sideber/TopAuthorSection";
 import { TrendingStoriesList } from "../Right-Sideber/TrendingStoryItem";
+import { useSession } from "next-auth/react";
 
 type RightsideberProps = {
   variant?: "sidebar" | "sheet";
@@ -10,6 +11,8 @@ type RightsideberProps = {
 
 export default function Rightsideber({ variant = "sidebar" }: RightsideberProps) {
   const isSheet = variant === "sheet";
+  const { data: session } = useSession();
+  const isLoggedIn = Boolean(session?.user?.accessToken);
 
   return (
     <div className={isSheet ? "w-full" : "w-full min-h-screen"}>
@@ -25,9 +28,11 @@ export default function Rightsideber({ variant = "sidebar" }: RightsideberProps)
         </section>
 
         {/* Trending Stories Section */}
-        <section>
-          <TrendingStoriesList />
-        </section>
+        {isLoggedIn ? (
+          <section>
+            <TrendingStoriesList />
+          </section>
+        ) : null}
       </div>
     </div>
   )
