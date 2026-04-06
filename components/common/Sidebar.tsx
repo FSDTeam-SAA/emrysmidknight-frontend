@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut } from 'lucide-react'
+import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut, Unlock } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
@@ -11,6 +11,7 @@ export const navigationItems = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
   { name: 'Explore', icon: Compass, href: '/explore' },
   { name: 'Subscriptions', icon: Bell, href: '/subscriptions' },
+  { name: 'My Unlock Blogs', icon: Unlock, href: '/my-unlock-blogs' },
   { name: 'Bookmarks', icon: Bookmark, href: '/bookmarks' },
   { name: 'Following', icon: Users, href: '/following' },
   { name: 'Settings', icon: Settings, href: '/settings' },

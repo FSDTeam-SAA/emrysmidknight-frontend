@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Lock } from "lucide-react";
+import { ChevronDown, Lock, Unlock } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { StoryPost } from "@/components/home/StoryPost";
@@ -9,6 +9,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type AuthorProfile = {
   _id?: string;
@@ -33,7 +41,9 @@ type SubscriptionPlan = {
   price?: number;
   duration?: string;
   isSubscribed?: boolean;
+  subscriptionStatus?: string;
   blogsCount?: number;
+  blogs?: string[];
 };
 
 type BlogAuthor = {
@@ -123,6 +133,15 @@ export default function StoriesPage() {
   const stats = profile?.stats;
   const subscriptionPlans = profile?.subscriptionPlans ?? [];
   const allBlogs = useMemo(() => profile?.blogs?.data ?? [], [profile?.blogs?.data]);
+  const blogsById = useMemo(() => {
+    const map = new Map<string, BlogItem>();
+    allBlogs.forEach((blog) => {
+      if (blog._id) {
+        map.set(blog._id, blog);
+      }
+    });
+    return map;
+  }, [allBlogs]);
 
   const stories = useMemo(() => {
     if (activeTab === "free") {
@@ -238,22 +257,69 @@ export default function StoriesPage() {
                       </div>
                     ))
                   ) : subscriptionPlans.length > 0 ? (
-                    subscriptionPlans.map((plan) => (
-                      <button
-                        key={plan._id || plan.name}
-                        className="w-full flex items-center justify-between bg-[#FFFFFF] !rounded-[4px] dark:bg-[#FFFFFF0D] px-4 py-3 text-left text-base text-[#F66F7D] transition "
-                      >
-                        <span>
-                          {plan.name || "Untitled plan"}
-                          {plan.price !== undefined ? (
-                            <span className="ml-2 text-xs text-[#9a9a9a]">
-                              ${plan.price}/{plan.duration || "month"}
-                            </span>
-                          ) : null}
-                        </span>
-                        <Lock className="h-4 w-4 text-[#F66F7D]" />
-                      </button>
-                    ))
+                    subscriptionPlans.map((plan) => {
+                      const planBlogs = (plan.blogs ?? [])
+                        .map((blogId) => blogsById.get(blogId))
+                        .filter(Boolean) as BlogItem[];
+
+                      const isPlanSubscribed =
+                        plan.isSubscribed || plan.subscriptionStatus === "subscribed";
+
+                      return (
+                        <DropdownMenu key={plan._id || plan.name}>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="w-full flex items-center justify-between bg-[#FFFFFF] !rounded-[4px] dark:bg-[#FFFFFF0D] px-4 py-3 text-left text-base text-[#F66F7D] transition-colors hover:bg-[#FCD2D7]/35 dark:hover:bg-[#FFFFFF14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F66F7D]/40"
+                            >
+                              <span>
+                                {plan.name || "Untitled plan"}
+                                {plan.price !== undefined ? (
+                                  <span className="ml-2 text-xs text-[#9a9a9a]">
+                                    ${plan.price}/{plan.duration || "month"}
+                                  </span>
+                                ) : null}
+                              </span>
+                              <span className="flex items-center gap-2">
+                                {isPlanSubscribed ? (
+                                  <Unlock className="h-4 w-4 text-[#16A34A]" />
+                                ) : (
+                                  <Lock className="h-4 w-4 text-[#F66F7D]" />
+                                )}
+                                <ChevronDown className="h-4 w-4 text-[#F66F7D]" />
+                              </span>
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="start"
+                            className="w-[--radix-dropdown-menu-trigger-width] min-w-0 p-2"
+                          >
+                            <DropdownMenuLabel>
+                              Blogs in this plan ({planBlogs.length})
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {planBlogs.length > 0 ? (
+                              planBlogs.map((blog) => (
+                                <DropdownMenuItem
+                                  key={blog._id}
+                                  onSelect={(event) => event.preventDefault()}
+                                  className="cursor-default whitespace-normal text-sm leading-snug text-[#121212] dark:text-white"
+                                >
+                                  {blog.title || "Untitled blog"}
+                                </DropdownMenuItem>
+                              ))
+                            ) : (
+                              <DropdownMenuItem
+                                onSelect={(event) => event.preventDefault()}
+                                className="cursor-default text-xs text-[#7D7D7D]"
+                              >
+                                No blogs available for this plan.
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      );
+                    })
                   ) : (
                     <div className="rounded-[4px] bg-[#FFFFFF] dark:bg-[#FFFFFF0D] px-4 py-3 text-sm text-[#7D7D7D]">
                       No subscription plans available.

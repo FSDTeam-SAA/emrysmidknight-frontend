@@ -211,6 +211,30 @@ export default function ProfileHeader() {
     setSubscriptionModalOpen(true);
   };
 
+  const handleShareProfile = async () => {
+    setMenuOpen(false);
+    if (typeof window === "undefined") return;
+
+    const shareUrl = authorId
+      ? `${window.location.origin}/author-profile/${authorId}`
+      : window.location.href;
+    const shareTitle = author?.fullName
+      ? `${author.fullName}'s profile`
+      : "Author profile";
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: shareTitle, url: shareUrl });
+        toast.success("Profile shared.");
+        return;
+      }
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Profile link copied.");
+    } catch (err) {
+      toast.error("Failed to share profile."+ err);
+    }
+  };
+
   const followMutation = useMutation({
     mutationFn: async ({
       isAlreadyFollowing,
@@ -386,17 +410,12 @@ export default function ProfileHeader() {
                     className="absolute right-0 top-[calc(100%+8px)] bg-[#1e2029] border border-white/10 rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] min-w-[160px] z-50 p-1.5"
                     onMouseLeave={() => setMenuOpen(false)}
                   >
-                    {["Share Profile", "Report", "Block User"].map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => setMenuOpen(false)}
-                        className={`block w-full text-left px-3.5 py-2 border-0 bg-transparent text-[13px] font-medium cursor-pointer rounded-lg hover:bg-white/[0.07] transition-colors duration-150 ${
-                          item === "Block User" ? "text-[#f47280]" : "text-[#d1d5db]"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    ))}
+                    <button
+                      onClick={handleShareProfile}
+                      className="block w-full text-left px-3.5 py-2 border-0 bg-transparent text-[13px] font-medium cursor-pointer rounded-lg hover:bg-white/[0.07] transition-colors duration-150 text-[#d1d5db]"
+                    >
+                      Share Profile
+                    </button>
                   </div>
                 )}
               </div>

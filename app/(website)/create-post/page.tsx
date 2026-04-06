@@ -13,6 +13,8 @@ import {
 } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import "react-quill/dist/quill.snow.css";
 import Image from "next/image";
 
@@ -48,6 +50,10 @@ export default function ResponsivePostEditorClone() {
   const [audios, setAudios] = useState<MediaItem[]>([]);
   const [attachments, setAttachments] = useState<MediaItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stripeModalOpen, setStripeModalOpen] = useState(false);
+  const [stripeModalMessage, setStripeModalMessage] = useState(
+    "You need to set up Stripe first to create a paid blog."
+  );
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -220,13 +226,50 @@ export default function ResponsivePostEditorClone() {
       setAudienceType("free");
       setPrice("");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create post"
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to create post";
+      const needsStripe =
+        audienceType === "paid" && /stripe/i.test(errorMessage);
+      if (needsStripe) {
+        setStripeModalMessage(errorMessage);
+        setStripeModalOpen(true);
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const stripeAccountMutation = useMutation({
+    mutationFn: async () => {
+      if (!token) throw new Error("Missing auth token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/user/stripe-account`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to load Stripe link");
+      }
+      const stripeUrl = data?.data?.url;
+      if (!stripeUrl) {
+        throw new Error("Stripe URL not found");
+      }
+      return stripeUrl;
+    },
+    onSuccess: (stripeUrl) => {
+      window.location.replace(stripeUrl);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to open Stripe");
+    },
+  });
 
   return (
     <div className="min-h-screen  dark:text-white">
@@ -640,6 +683,34 @@ export default function ResponsivePostEditorClone() {
           stroke: #e2e8f0;
         }
       `}</style>
+
+      <Dialog open={stripeModalOpen} onOpenChange={setStripeModalOpen}>
+        <DialogContent className="w-full max-w-sm rounded-xl bg-white p-5 text-[#121212] dark:bg-[#1a1a1a] dark:text-white">
+          <h3 className="text-lg font-semibold">Stripe setup required</h3>
+          <p className="mt-2 text-sm text-[#7D7D7D] dark:text-[#B0B0B0]">
+            {stripeModalMessage}
+          </p>
+          <div className="mt-5 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setStripeModalOpen(false)}
+              className="rounded-md border border-black/10 px-3 py-2 text-sm font-medium text-[#121212] transition hover:bg-black/5 dark:border-white/10 dark:text-white dark:hover:bg-white/10"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => stripeAccountMutation.mutate()}
+              disabled={stripeAccountMutation.isPending}
+              className="rounded-md bg-[#F66F7D] px-3 py-2 text-sm font-semibold text-white transition hover:bg-[#e85d6b] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {stripeAccountMutation.isPending
+                ? "Opening..."
+                : "Setup Stripe"}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
