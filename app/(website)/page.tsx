@@ -85,7 +85,6 @@ export default function Home() {
     },
   });
 
-  // ✅ Card-style Skeleton UI
   if (isLoading || status === "loading") {
     return (
       <div className="py-8 flex flex-col items-center gap-4 px-0 lg:px-4">
