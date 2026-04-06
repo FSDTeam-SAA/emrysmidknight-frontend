@@ -132,10 +132,10 @@ export function TopAuthorSection() {
                   </div>
 
                   <div className="flex-1 py-2 pr-3">
-                    <h3 className="text-[#121212] dark:text-white text-base sm:text-lg font-medium group-hover:text-[#0F172A] dark:group-hover:text-white">
+                    <h3 className="text-[#121212] dark:text-white text-[14px] sm:text-base lg:text-lg font-medium group-hover:text-[#0F172A] dark:group-hover:text-white">
                       {displayName}
                     </h3>
-                    <div className="mt-1 flex items-center gap-2 text-xs sm:text-sm text-[#121212] dark:text-[#D7D7D7]">
+                    <div className="mt-1 flex items-center gap-2 text-[11px] sm:text-xs lg:text-sm text-[#121212] dark:text-[#D7D7D7]">
                       <span>@{author.userName}</span>
                       <span className="h-1 w-1 rounded-full bg-[#D7D7D7] dark:bg-[#2C2C2C]" />
                       <span className="font-medium text-[#121212] dark:text-[#FFFFFF]">

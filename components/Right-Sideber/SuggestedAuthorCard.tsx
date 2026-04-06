@@ -104,12 +104,12 @@ export function SuggestedAuthorCard({
               }
             }}
           >
-            <h3 className="font-medium text-[20px] sm:text-xl text-[#121212] dark:text-[#FFFFFF] truncate">
+            <h3 className="font-medium text-[14px] sm:text-base lg:text-xl text-[#121212] dark:text-[#FFFFFF] truncate">
               {displayName}
             </h3>
           </Link>
 
-          <p className="text-base sm:text-sm text-[#7D7D7D] mt-0.5">
+          <p className="text-[11px] sm:text-xs lg:text-sm text-[#7D7D7D] mt-0.5">
             Followers:{" "}
             {followersCount >= 1000
               ? `${Math.floor(followersCount / 1000)}K`

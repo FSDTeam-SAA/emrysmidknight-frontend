@@ -49,6 +49,7 @@ export function SidebarMenu({ variant = 'sidebar', className = '' }: SidebarMenu
               <Link
                 key={item.href}
                 href={item.href}
+                data-close-sheet="true"
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${
                   isActive
                     ? 'bg-[#c9727a1f] text-[#c9727a]'
@@ -92,6 +93,7 @@ export function SidebarMenu({ variant = 'sidebar', className = '' }: SidebarMenu
         {isLoggedIn && (
           <button
             onClick={() => setLogoutModalOpen(true)}
+            data-close-sheet={isSheet ? "true" : undefined}
             className={
               isSheet
                 ? 'flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm transition text-gray-400 hover:bg-[#c9727a14] hover:text-[#c9727a]'
