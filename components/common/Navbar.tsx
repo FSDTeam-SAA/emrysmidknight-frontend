@@ -15,10 +15,26 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import Image from "next/image";
+import Link from "next/link";
 import Rightsideber from "@/components/common/Rightsideber";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SidebarMenu } from "@/components/common/Sidebar";
 import { useSession } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
+
+type NotificationApiItem = {
+  isRead?: boolean;
+};
+
+type NotificationApiResponse = {
+  data?: NotificationApiItem[];
+  meta?: {
+    unreadCount?: number;
+  };
+  message?: string;
+  success?: boolean;
+  statusCode?: number;
+};
 
 export default function Navbar() {
   const router = useRouter();
@@ -26,11 +42,45 @@ export default function Navbar() {
   const searchParams = useSearchParams();
   const searchTermFromUrl = searchParams.get("searchTerm") ?? "";
   const { data: session } = useSession();
+  const token = session?.user?.accessToken;
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeIcon, setActiveIcon] = useState<"bell" | "user" | null>(null);
   const isLoggedIn = Boolean(session?.user);
+
+  const { data: notificationsData } = useQuery<NotificationApiResponse>({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      if (!token) throw new Error("Missing auth token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/notification`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(result?.message || "Failed to fetch notifications");
+      }
+      return result as NotificationApiResponse;
+    },
+    enabled: !!token,
+    staleTime: 30_000,
+  });
+
+  const hasUnreadNotifications = (() => {
+    const unreadFromMeta = notificationsData?.meta?.unreadCount;
+    if (typeof unreadFromMeta === "number") {
+      return unreadFromMeta > 0;
+    }
+    const items = Array.isArray(notificationsData?.data)
+      ? notificationsData.data
+      : [];
+    return items.some((item) => !item.isRead);
+  })();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,13 +233,15 @@ export default function Navbar() {
 
         {/* CENTER: Logo */}
         <div className="absolute left-1/2 hidden h-[50px] w-[74px] -translate-x-1/2 transform md:flex">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={1000}
-            height={1000}
-            className="h-full w-full object-contain"
-          />
+          <Link href="/" aria-label="Go to home" className="block h-full w-full">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={1000}
+              height={1000}
+              className="h-full w-full object-contain"
+            />
+          </Link>
         </div>
 
         {/* RIGHT: Icons */}
@@ -207,9 +259,11 @@ export default function Navbar() {
                     activeIcon === "bell"
                       ? "text-[#F66F7D]"
                       : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
-                  } md:size-[40px] sm:size-[26px] size-[22px]`}
+                  } md:size-[35px] sm:size-[26px] size-[22px]`}
                 />
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-[#c9727a] dark:border-[#121212] sm:h-2.5 sm:w-2.5 md:right-1 md:top-1" />
+                {hasUnreadNotifications && (
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-[#c9727a] dark:border-[#121212] sm:h-2.5 sm:w-2.5 md:right-1 md:top-1" />
+                )}
               </button>
 
               <button
@@ -223,7 +277,7 @@ export default function Navbar() {
                     activeIcon === "user"
                       ? "text-[#F66F7D]"
                       : "text-[#121212] hover:text-[#F66F7D] dark:text-white"
-                  } md:size-[40px] sm:size-[26px] size-[22px]`}
+                  } md:size-[35px] sm:size-[26px] size-[22px]`}
                 />
               </button>
             </>
