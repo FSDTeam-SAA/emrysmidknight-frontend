@@ -23,6 +23,7 @@ type PaymentMethod = {
   cardNumber?: string;
   expiryMonth?: number;
   expiryYear?: number;
+  cvc?: string;
   cardHolderName?: string;
 };
 
@@ -71,6 +72,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
   const [cvv, setCvv] = useState("");
   const [nameOnCard, setNameOnCard] = useState("");
   const queryClient = useQueryClient();
+  const isManual = selectedMethod === "manual";
 
   const { data: savedMethods = [], isLoading: isMethodsLoading } = useQuery({
     queryKey: ["payment-methods", token],
@@ -147,7 +149,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
     setCardNumber(formatCardNumber(method.cardNumber || ""));
     setExpiry(formatExpiryText(method.expiryMonth, method.expiryYear));
     setNameOnCard(method.cardHolderName || "");
-    setCvv("");
+    setCvv((method.cvc || "").replace(/\D/g, "").slice(0, 3));
   };
 
   const handleManualMode = () => {
@@ -170,6 +172,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
               type="text"
               placeholder="0000 0000 0000 0000"
               value={cardNumber}
+              disabled={!isManual}
               onChange={(e) => {
                 if (hasTextCharacter(e.target.value)) {
                   toast.warning("Card number field accepts numbers only.", {
@@ -179,7 +182,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
                 setCardNumber(formatCardNumber(e.target.value));
                 setSelectedMethod("manual");
               }}
-              className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7]"
+              className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7] disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -190,6 +193,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
                 type="text"
                 placeholder="MM/YY"
                 value={expiry}
+                disabled={!isManual}
                 onChange={(e) => {
                   if (hasTextCharacter(e.target.value)) {
                     toast.warning("Expiry field accepts numbers only.", {
@@ -199,7 +203,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
                   setExpiry(formatExpiry(e.target.value));
                   setSelectedMethod("manual");
                 }}
-                className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7]"
+                className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7] disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
             <div>
@@ -208,6 +212,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
                 type="text"
                 placeholder="123"
                 value={cvv}
+                disabled={!isManual}
                 onChange={(e) => {
                   if (hasTextCharacter(e.target.value)) {
                     toast.warning("CVV field accepts numbers only.", {
@@ -217,7 +222,7 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
                   setCvv(normalizeDigits(e.target.value).replace(/\D/g, "").slice(0, 3));
                   setSelectedMethod("manual");
                 }}
-                className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7]"
+                className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7] disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
           </div>
@@ -228,11 +233,12 @@ export function SubscriptionPaymentModal({ open, onClose, planId, amount, author
               type="text"
               placeholder="John Doe"
               value={nameOnCard}
+              disabled={!isManual}
               onChange={(e) => {
                 setNameOnCard(e.target.value);
                 setSelectedMethod("manual");
               }}
-              className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7]"
+              className="w-full h-[50px] px-3.5 text-[14px] text-[#1a1a1a] dark:text-white border border-gray-300 dark:border-[#D7D7D7] rounded-lg outline-none bg-white dark:bg-[#2C2C2C] placeholder:text-gray-400 dark:placeholder:text-[#D7D7D7] disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import {
   Search,
   Bell,
@@ -47,6 +47,8 @@ export default function Navbar() {
   const [searchValue, setSearchValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeIcon, setActiveIcon] = useState<"bell" | "user" | null>(null);
+  const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
+  const [isRightSheetOpen, setIsRightSheetOpen] = useState(false);
   const isLoggedIn = Boolean(session?.user);
 
   const { data: notificationsData } = useQuery<NotificationApiResponse>({
@@ -132,6 +134,17 @@ export default function Navbar() {
     }
   };
 
+  const handleSheetContentClick = (
+    event: MouseEvent<HTMLDivElement>,
+    closeSheet: () => void
+  ) => {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    if (target.closest("[data-close-sheet]") || target.closest("a")) {
+      closeSheet();
+    }
+  };
+
   return (
     <div
       className={`sticky top-0 z-50 border-b transition-all duration-200 ${
@@ -146,7 +159,7 @@ export default function Navbar() {
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {/* Mobile Hamburger */}
           <div className="shrink-0 md:hidden">
-            <Sheet>
+            <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
               <SheetTrigger asChild>
                 <button
                   className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a1a]"
@@ -160,6 +173,9 @@ export default function Navbar() {
                 side="left"
                 showCloseButton={false}
                 className="flex w-[88vw] max-w-sm flex-col border-r border-[#242424] bg-[#161616] p-0"
+                onClick={(event) =>
+                  handleSheetContentClick(event, () => setIsMenuSheetOpen(false))
+                }
               >
                 {/* Sheet Header */}
                 <div className="flex items-center justify-between border-b border-[#242424] p-5">
@@ -295,7 +311,7 @@ export default function Navbar() {
       {/* Mobile Right Sidebar Menu Under Navbar */}
       <div className="border-t border-black/5 px-3 py-2 dark:border-[#242424] md:hidden">
         <div className="flex items-center justify-end">
-          <Sheet>
+          <Sheet open={isRightSheetOpen} onOpenChange={setIsRightSheetOpen}>
             <SheetTrigger asChild>
               <button
                 className="flex items-center gap-2 px-2 py-1.5 text-sm text-[#2C2C2C] transition hover:text-[#F66F7D] dark:text-gray-300"
@@ -310,9 +326,11 @@ export default function Navbar() {
               side="right"
               showCloseButton={false}
               className="flex w-[88vw] max-w-sm flex-col border-l border-[#242424] bg-[#161616] p-0"
+              onClick={(event) =>
+                handleSheetContentClick(event, () => setIsRightSheetOpen(false))
+              }
             >
-              <div className="flex items-center justify-between border-b border-[#242424] p-5">
-                <span className="font-medium text-white">Sidebar</span>
+              <div className="flex items-center justify-end border-b border-[#242424] p-5">
                 <SheetClose asChild>
                   <button
                     className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-[#c9727a1a]"

@@ -190,7 +190,7 @@ export function PaymentMethods() {
           cardBrand,
           cardNumber,
           expiryDate,
-          cvv,
+          cvc: cvv,
           cardHolderName,
         }),
       });

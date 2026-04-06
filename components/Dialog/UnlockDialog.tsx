@@ -55,24 +55,24 @@ export function UnlockDialog({ blogId, title, author, content, image, price }: U
             />
           </div>
 
-          <div className="bg-white px-5 pt-5 pb-6 relative z-20 rounded-b-2xl">
+          <div className="bg-white dark:bg-white/5 px-5 pt-5 pb-6 relative z-20 rounded-b-2xl">
             <div className="mb-3.5 space-y-1.5">
-              <p className="text-[15px] text-[#1a1a1a]">
+              <p className="text-[15px] text-[#1a1a1a] dark:text-white">
                 <span className="font-bold">Title:</span> {title}
               </p>
-              <p className="text-[15px] text-[#1a1a1a]">
+              <p className="text-[15px] text-[#1a1a1a] dark:text-white">
                 <span className="font-bold">Author:</span> {author}
               </p>
-              <p className="text-[15px] text-[#1a1a1a]">
+              <p className="text-[15px] text-[#1a1a1a] dark:text-white">
                 <span className="font-bold">Status:</span> Premium
               </p>
             </div>
 
             <div className="relative mb-6 overflow-hidden max-h-[60px]">
-              <p className="text-[13px] text-[#555] leading-[1.6] select-none blur-sm">
+              <p className="text-[13px] text-[#555] dark:white leading-[1.6] select-none blur-sm">
                 {content}
               </p>
-              <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-b from-transparent to-white" />
+              {/* <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-b from-transparent to-white" /> */}
             </div>
 
             <div className="flex gap-3">
