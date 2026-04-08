@@ -244,7 +244,7 @@ export default function SubscriptionManagement() {
 
   return (
     <div className="min-h-screen px-4">
-      <h1 className="text-[#121212] dark:text-[#FFFF] lg:text-[40px] md:text-[30px] font-bold mb-10 mt-3">
+      <h1 className="text-[#121212] dark:text-white text-[28px] lg:text-[36px] font-bold mt-3 mb-5">
         Subscription
       </h1>
       <div className="max-w-2xl mx-auto space-y-4">

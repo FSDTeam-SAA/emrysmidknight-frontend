@@ -7,7 +7,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Lock } from "lucide-react";
+import { Lock, X } from "lucide-react";
 import Image from "next/image";
 import { PaymentModal } from "./PaymentModal";
 
@@ -43,19 +43,31 @@ export function UnlockDialog({ blogId, title, author, content, image, price }: U
           </div>
         </DialogTrigger>
 
-        <DialogContent className="p-0 overflow-hidden rounded-2xl !max-w-lg w-full gap-0 border-0 bg-transparent">
-          <div className="absolute inset-0 bg-black z-0" />
-
-          <div className="w-full h-[300px] relative overflow-hidden z-10">
+        <DialogContent
+          showCloseButton={false}
+          className="w-[calc(100%-1.5rem)] max-w-lg max-h-[90vh] overflow-hidden rounded-2xl p-0 gap-0 border-0 bg-white dark:bg-[#121212]"
+        >
+          <div className="relative h-[180px] sm:h-[240px] w-full overflow-hidden">
             <Image
               src={image || "/unlockImage.png"}
               alt="Book Cover"
               fill
               className="object-cover blur-[6px] scale-[105%]"
             />
+            <div className="absolute inset-0 bg-black/40" />
+
+            <DialogClose asChild>
+              <button
+                type="button"
+                aria-label="Close dialog"
+                className="absolute right-3 top-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+              >
+                <X size={16} />
+              </button>
+            </DialogClose>
           </div>
 
-          <div className="bg-white dark:bg-white/5 px-5 pt-5 pb-6 relative z-20 rounded-b-2xl">
+          <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-5 sm:pb-6 overflow-y-auto">
             <div className="mb-3.5 space-y-1.5">
               <p className="text-[15px] text-[#1a1a1a] dark:text-white">
                 <span className="font-bold">Title:</span> {title}
@@ -68,26 +80,19 @@ export function UnlockDialog({ blogId, title, author, content, image, price }: U
               </p>
             </div>
 
-            <div className="relative mb-6 overflow-hidden max-h-[60px]">
-              <p className="text-[13px] text-[#555] dark:white leading-[1.6] select-none blur-sm">
+            <div className="relative mb-5 overflow-hidden">
+              <p className="text-[13px] text-[#555] dark:text-[#cfcfcf] leading-[1.6] select-none blur-sm line-clamp-3">
                 {content}
               </p>
-              {/* <div className="absolute bottom-0 left-0 right-0 h-[40px] bg-gradient-to-b from-transparent to-white" /> */}
             </div>
 
-            <div className="flex gap-3">
+            <div>
               <button
                 onClick={handleUnlockClick}
-                className="flex-1 h-[46px] bg-[#F66F7D] text-white text-[16px] font-semibold rounded-lg cursor-pointer hover:bg-[#e85d6b] transition-colors"
+                className="w-full h-[46px] bg-[#F66F7D] text-white text-[16px] font-semibold rounded-lg cursor-pointer hover:bg-[#e85d6b] transition-colors"
               >
                 Unlock {price ? `$${price.toFixed(2)}` : ""}
               </button>
-
-              <DialogClose asChild>
-                <button className="flex-1 h-[46px] bg-white text-[#F66F7D] text-[16px] font-semibold border-2 border-[#F66F7D] rounded-lg cursor-pointer hover:bg-[#fff0f1] transition-colors">
-                  Cancel
-                </button>
-              </DialogClose>
             </div>
           </div>
         </DialogContent>

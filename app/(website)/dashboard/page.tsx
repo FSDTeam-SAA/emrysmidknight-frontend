@@ -121,7 +121,7 @@ export default function Page() {
     : "Add Stripe Account";
 
   return (
-    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:py-10">
+    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:pb-10">
       <div className="container mx-auto">
 
         {/* Title */}

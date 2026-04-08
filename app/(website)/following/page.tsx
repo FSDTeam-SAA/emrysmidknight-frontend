@@ -230,10 +230,10 @@ export default function FollowingPage() {
   const isBusy = isLoading || isSessionLoading;
 
   return (
-    <main className="px-1 py-10 sm:px-4 lg:px-2 overflow-visible">
+    <main className="px-1 pb-10 sm:px-4 lg:px-2 overflow-visible">
       {/* ── Header ── */}
       <div className="mb-10">
-        <h1 className="text-3xl sm:text-4xl lg:text-[40px] leading-tight font-semibold">
+        <h1 className="text-[#121212] dark:text-white text-[28px] lg:text-[36px] font-bold mt-3">
           Following
         </h1>
       </div>

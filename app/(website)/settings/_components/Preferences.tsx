@@ -18,7 +18,7 @@ export default function Preferences({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl bg-white px-4 py-4 shadow-md transition dark:bg-white/5 sm:px-6 sm:py-5">
+      <div className="rounded-[8px] bg-white px-4 py-4  transition dark:bg-white/5 sm:px-6 sm:py-5">
         <p className="mb-4 text-lg font-medium text-[color:var(--text-primary)] sm:text-xl">
           Theme
         </p>

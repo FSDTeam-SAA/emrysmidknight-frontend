@@ -25,6 +25,14 @@ export default function FollowerCard({
 }: FollowerCardProps) {
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl md:rounded-3xl border border-white/10 bg-white dark:bg-white/5">
+      <button
+        onClick={onUnfollow}
+        type="button"
+        aria-label={`Remove ${name}`}
+        className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white text-lg leading-none transition-colors hover:bg-black/65"
+      >
+        X
+      </button>
 
       {/* Hover Glow */}
       {/* <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_top,#ff4d6d2a,transparent_55%)]" /> */}
