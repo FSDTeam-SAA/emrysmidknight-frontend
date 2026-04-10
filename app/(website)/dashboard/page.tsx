@@ -11,7 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan","My blogs"] ;
+const tabs = ["Overview", "Subscribers", "Premium Unlocks", "Subscriptions Plan","My blogs"] ;
 
 type UserProfile = {
   email?: string;
@@ -174,7 +174,7 @@ export default function Page() {
         <div className="w-full overflow-hidden">
           {activeTab === "Overview" && <DashboardPage />}
           {activeTab === "Subscribers" && <SubscriptionTable />}
-          {activeTab === "Primium Unlocks" && <TransactionsTable />}
+          {activeTab === "Premium Unlocks" && <TransactionsTable />}
           {activeTab === "Subscriptions Plan" && <PlansTable />}
           {activeTab === "My blogs" && <MyBlogs />}
         </div>
