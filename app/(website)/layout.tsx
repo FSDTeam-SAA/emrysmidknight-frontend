@@ -22,13 +22,14 @@ export default function RootLayout({
   const isDashboardPage = pathname.startsWith("/dashboard"); 
   const isCreatePostPage = pathname.startsWith("/create-post"); 
   const isEditBlogPage = pathname.startsWith("/edit-blog"); 
+  const isAboutPage = pathname.startsWith("/about");
   
 
 
 
   // Pages where main content is full-width
   const isFullWidthPage =
-    isSettingsPage || isFollowingPage || isProfilePage || isAuthorProfilePage || isNotificationPage || isDashboardPage || isCreatePostPage || isEditBlogPage; 
+    isSettingsPage || isFollowingPage || isProfilePage || isAuthorProfilePage || isNotificationPage || isDashboardPage || isCreatePostPage || isEditBlogPage || isAboutPage; 
 
   return (
     <ThemeProvider>
