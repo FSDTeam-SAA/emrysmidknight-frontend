@@ -152,6 +152,10 @@ export function SidebarMenu({ variant = 'sidebar', className = '' }: SidebarMenu
   )
 }
 
+
+
+
+
 export default function Sidebar() {
   return (
     <div className="w-full min-h-screen mt-8 sticky top-[90px]">
