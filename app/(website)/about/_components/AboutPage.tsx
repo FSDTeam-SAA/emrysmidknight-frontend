@@ -52,50 +52,50 @@ const earningModels = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen  text-[#1a1a1a] font-sans">
+    <div className="min-h-screen  text-[var(--text-primary)] font-sans">
       {/* ── Hero ── */}
-      <section className="max-w-2xl mx-auto px-6 pt-7 pb-16 text-center">
+      <section className="px-6 pt-7 pb-16 text-center">
         <Badge
           variant="outline"
-          className="mb-6 text-[0.65rem] tracking-[0.12em] uppercase text-[#9e9b94] border-[#d4d1c8] bg-transparent font-normal"
+          className="mb-6 text-[0.65rem] tracking-[0.12em] uppercase text-[var(--text-muted)] border-[var(--border)] bg-transparent font-normal"
         >
           About Publypost
         </Badge>
         <h1
-          className="text-4xl md:text-5xl font-medium leading-[1.2] tracking-tight text-[#1a1a1a] mb-6"
+          className="text-4xl md:text-5xl font-medium leading-[1.2] tracking-tight text-[var(--text-primary)] mb-6"
           style={{ fontFamily: "'Lora', serif" }}
         >
           A place built for{" "}
-          <em className="italic text-[#6b6860] not-italic" style={{ fontStyle: "italic" }}>
+          <em className="italic text-[var(--text-secondary)] not-italic" style={{ fontStyle: "italic" }}>
             stories
           </em>{" "}
           worth telling
         </h1>
-        <p className="text-[1.0625rem] text-[#5c5954] leading-[1.75] font-light max-w-lg mx-auto">
+        <p className="text-[1.0625rem] text-[var(--text-secondary)] leading-[1.75] font-light max-w-lg mx-auto">
           Publypost is a platform where writers share blogs, novels, comics, and
           videos — and readers find the stories they&apos;ve been looking for.
         </p>
       </section>
 
       <div className="flex justify-center">
-        <div className="w-10 h-px bg-[#d4d1c8]" />
+        <div className="w-10 h-px bg-[var(--border)]" />
       </div>
 
       {/* ── Main content ── */}
-      <main className="max-w-[620px] mx-auto px-6 mt-16 space-y-16">
+      <main className=" px-6 mt-16 space-y-16">
 
         {/* What we are */}
         <section>
-          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[#b0ada5] font-medium block mb-3">
+          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[var(--text-muted)] font-medium block mb-3">
             What we are
           </span>
           <h2
-            className="text-2xl font-medium text-[#1a1a1a] mb-4 leading-snug"
+            className="text-2xl font-medium text-[var(--text-primary)] mb-4 leading-snug"
             style={{ fontFamily: "'Lora', serif" }}
           >
             More than a publishing tool
           </h2>
-          <p className="text-base text-[#5c5954] leading-[1.8] font-light mb-8">
+          <p className="text-base text-[var(--text-secondary)] leading-[1.8] font-light mb-8">
             At its core, Publypost is a story monetization platform. We believe
             writers deserve to earn from their craft — whether that&apos;s a single
             standalone piece or an ongoing series that keeps readers coming back.
@@ -103,17 +103,17 @@ export default function AboutPage() {
           </p>
 
           {/* Format grid */}
-          <div className="grid grid-cols-2 border border-[#e0ddd6] rounded-xl overflow-hidden gap-px bg-[#e0ddd6]">
+          <div className="grid grid-cols-2 border border-[var(--border)] rounded-xl overflow-hidden gap-px bg-[var(--border)]">
             {formats.map(({ icon, title, desc }) => (
-              <div key={title} className="bg-[#faf9f6] p-5">
-                <span className="text-lg text-[#1a1a1a] block mb-2">{icon}</span>
+              <div key={title} className="bg-[var(--surface)] p-5">
+                <span className="text-lg text-[var(--text-primary)] block mb-2">{icon}</span>
                 <h3
-                  className="text-[0.9375rem] font-medium text-[#1a1a1a] mb-1"
-                  style={{ fontFamily: "'Lora', serif" }}
+                  className="text-base font-medium text-[var(--text-primary)] mb-1"
+                  // style={{ fontFamily: "'Lora', serif" }}
                 >
                   {title}
                 </h3>
-                <p className="text-[0.8125rem] text-[#9e9b94] leading-[1.6]">
+                <p className="text-[0.8125rem] text-[var(--text-muted)] leading-[1.6]">
                   {desc}
                 </p>
               </div>
@@ -123,20 +123,20 @@ export default function AboutPage() {
 
         {/* No ads */}
         <section>
-          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[#b0ada5] font-medium block mb-3">
+          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[var(--text-muted)] font-medium block mb-3">
             Our philosophy
           </span>
           <h2
-            className="text-2xl font-medium text-[#1a1a1a] mb-5 leading-snug"
+            className="text-2xl font-medium text-[var(--text-primary)] mb-5 leading-snug"
             style={{ fontFamily: "'Lora', serif" }}
           >
             No ads. Ever.
           </h2>
 
           {/* Blockquote */}
-          <blockquote className="border-l-2 border-[#1a1a1a] pl-6 mb-5">
+          <blockquote className="border-l-2 border-[var(--text-primary)] pl-6 mb-5">
             <p
-              className="text-[1.125rem] text-[#3a3836] leading-[1.75] italic"
+              className="text-[1.125rem] text-[var(--text-secondary)] leading-[1.75] italic"
               style={{ fontFamily: "'Lora', serif" }}
             >
               &quot;I take a small cut of what writers earn on this platform. That
@@ -148,7 +148,7 @@ export default function AboutPage() {
             </p>
           </blockquote>
 
-          <p className="text-base text-[#5c5954] leading-[1.8] font-light">
+          <p className="text-base text-[var(--text-secondary)] leading-[1.8] font-light">
             The model is simple: when writers do well, the platform does well.
             There are no third-party advertisers, no sponsored content, no hidden
             agendas. Just stories and the people who love them.
@@ -157,16 +157,16 @@ export default function AboutPage() {
 
         {/* How writers earn */}
         <section>
-          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[#b0ada5] font-medium block mb-3">
+          <span className="text-[0.7rem] tracking-[0.14em] uppercase text-[var(--text-muted)] font-medium block mb-3">
             How writers earn
           </span>
           <h2
-            className="text-2xl font-medium text-[#1a1a1a] mb-5 leading-snug"
+            className="text-2xl font-medium text-[var(--text-primary)] mb-5 leading-snug"
             style={{ fontFamily: "'Lora', serif" }}
           >
             Income for every kind of storyteller
           </h2>
-          <p className="text-base text-[#5c5954] leading-[1.8] font-light mb-6">
+          <p className="text-base text-[var(--text-secondary)] leading-[1.8] font-light mb-6">
             Publypost supports multiple ways for writers to earn, regardless of
             how they prefer to publish.
           </p>
@@ -174,24 +174,24 @@ export default function AboutPage() {
           <div>
             {earningModels.map(({ num, title, desc }, i) => (
               <div key={num}>
-                {i === 0 && <Separator className="bg-[#e8e5de]" />}
+                {i === 0 && <Separator className="bg-[var(--border)]" />}
                 <div className="flex items-start gap-5 py-5">
                   <span
-                    className="text-sm text-[#b0ada5] min-w-[1.5rem] pt-0.5"
+                    className="text-sm text-[var(--text-muted)] min-w-[1.5rem] pt-0.5"
                     style={{ fontFamily: "'Lora', serif" }}
                   >
                     {num}
                   </span>
                   <div>
-                    <h4 className="text-[0.9375rem] font-medium text-[#1a1a1a] mb-1">
+                    <h4 className="text-[0.9375rem] font-medium text-[var(--text-primary)] mb-1">
                       {title}
                     </h4>
-                    <p className="text-[0.8125rem] text-[#9e9b94] leading-[1.6]">
+                    <p className="text-[0.8125rem] text-[var(--text-muted)] leading-[1.6]">
                       {desc}
                     </p>
                   </div>
                 </div>
-                <Separator className="bg-[#e8e5de]" />
+                <Separator className="bg-[var(--border)]" />
               </div>
             ))}
           </div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
       {/* ── Sign-off ── */}
       <section className="max-w-sm mx-auto px-6 text-center">
         <p
-          className="text-[1.125rem] text-[#5c5954] leading-[1.8] italic mb-8"
+          className="text-[1.125rem] text-[var(--text-secondary)] leading-[1.8] italic mb-8"
           style={{ fontFamily: "'Lora', serif" }}
         >
           &quot;I hope this website brings you the stories — or the fans — you&apos;ve
@@ -210,14 +210,14 @@ export default function AboutPage() {
         <div className="flex gap-3 justify-center flex-wrap">
           <Button
             asChild
-            className="rounded-full bg-[#1a1a1a] text-[#faf9f6] hover:bg-[#333] px-6"
+            className="rounded-full bg-[var(--text-primary)] text-[var(--page-bg)] hover:opacity-90 px-6"
           >
             <Link href="/">Start reading</Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="rounded-full border-[#c8c5bc] text-[#5c5954] hover:border-[#1a1a1a] hover:text-[#1a1a1a] bg-transparent px-6"
+            className="rounded-full border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] bg-transparent px-6"
           >
             <Link href="/signin">Become a writer</Link>
           </Button>
