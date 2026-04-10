@@ -11,7 +11,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
-const tabs = ["Overview", "Subscribers", "Primium Unlocks", "Subscriptions Plan","My blogs"] ;
+const tabs = ["Overview", "Subscribers", "Premium Unlocks", "Subscriptions Plan","My blogs"] ;
 
 type UserProfile = {
   email?: string;
@@ -121,7 +121,7 @@ export default function Page() {
     : "Add Stripe Account";
 
   return (
-    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:py-10">
+    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 py-6 sm:py-8 lg:pb-10">
       <div className="container mx-auto">
 
         {/* Title */}
@@ -174,7 +174,7 @@ export default function Page() {
         <div className="w-full overflow-hidden">
           {activeTab === "Overview" && <DashboardPage />}
           {activeTab === "Subscribers" && <SubscriptionTable />}
-          {activeTab === "Primium Unlocks" && <TransactionsTable />}
+          {activeTab === "Premium Unlocks" && <TransactionsTable />}
           {activeTab === "Subscriptions Plan" && <PlansTable />}
           {activeTab === "My blogs" && <MyBlogs />}
         </div>

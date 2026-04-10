@@ -38,10 +38,10 @@ export default function SettingsPage() {
   ] as const;
 
   return (
-    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 sm:px-6 py-6 sm:py-8 lg:py-10">
+    <div className="min-h-screen font-sans text-[color:var(--page-text)] px-0 sm:px-6 py-6 sm:py-8">
       <div className="container mx-auto">
         {/* Title */}
-        <h1 className="mb-5 text-2xl font-semibold text-[color:var(--page-text)] sm:text-3xl lg:mb-7 lg:text-[40px]">
+        <h1 className="text-[#121212] dark:text-white text-[28px] lg:text-[36px] font-bold mt-3 mb-5">
           Settings
         </h1>
 

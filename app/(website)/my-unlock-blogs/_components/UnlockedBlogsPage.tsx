@@ -128,8 +128,8 @@ export default function UnlockedBlogsPage() {
     <div className="min-h-screen px-4">
       <div className="mx-auto w-full max-w-2xl">
         <div className="mb-6">
-          <h1 className="text-[#121212] dark:text-white text-[28px] md:text-[32px] font-semibold">
-            My Unlock Blogs
+          <h1 className="text-[#121212] dark:text-white text-[28px] lg:text-[36px] font-bold mt-3">
+            Unlocked Blogs
           </h1>
           <p className="text-sm text-[#7D7D7D] dark:text-[#B0B0B0]">
             Blogs you have unlocked from purchases.

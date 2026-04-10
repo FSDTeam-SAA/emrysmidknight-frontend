@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut, Unlock } from 'lucide-react'
+import { Home, Compass, Bell, Bookmark, Users, Settings, LayoutDashboard, LogOut, Unlock, Info } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
@@ -11,9 +11,10 @@ export const navigationItems = [
   { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
   { name: 'Explore', icon: Compass, href: '/explore' },
   { name: 'Subscriptions', icon: Bell, href: '/subscriptions' },
-  { name: 'My Unlock Blogs', icon: Unlock, href: '/my-unlock-blogs' },
+  { name: 'Unlocked', icon: Unlock, href: '/my-unlock-blogs' },
   { name: 'Bookmarks', icon: Bookmark, href: '/bookmarks' },
   { name: 'Following', icon: Users, href: '/following' },
+  { name: 'About', icon: Info , href: '/about' },
   { name: 'Settings', icon: Settings, href: '/settings' },
 ]
 
@@ -66,7 +67,7 @@ export function SidebarMenu({ variant = 'sidebar', className = '' }: SidebarMenu
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors group ${
+              className={`flex items-center gap-3 px-3 py-3 rounded-[4px] transition-colors group ${
                 isActive ? 'bg-[#FEF1F2] dark:bg-[#FFFFFF0D]' : 'dark:hover:bg-[#FFFFFF0D] hover:bg-[#FEF1F2]'
               }`}
             >
